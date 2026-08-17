@@ -1,0 +1,30 @@
+# .NET
+**/bin/
+**/obj/
+**/TestResults/
+*.user
+*.suo
+
+# Build artifacts and local data
+**/publish/
+**/backups/
+**/cache/
+**/crash-reports/
+*.zip
+*.7z
+*.pdb
+*.log
+
+# Secrets and local overrides
+.env
+.env.*
+**/appsettings.Local.json
+**/appsettings.Production.json
+**/secrets.json
+
+# IDE / OS
+.vs/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
