@@ -97,7 +97,18 @@
               <Separator Background="#46616F" />
               <TextBlock x:Name="SceneInfo" Text="ยังไม่ได้รับข้อมูล Scene" TextWrapping="Wrap" Foreground="#B8CBD4" Margin="0,14" />
               <TextBlock Text="NPC และภารกิจ" FontWeight="SemiBold" Foreground="#F0B429" />
-              <ListBox x:Name="NpcListBox" Height="82" DisplayMemberPath="Name" SelectionChanged="NpcList_SelectionChanged" />
+              <ListBox x:Name="NpcListBox" Height="126" SelectionChanged="NpcList_SelectionChanged">
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <StackPanel Margin="3">
+                      <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                      <TextBlock Foreground="#607D8B" FontSize="11">
+                        <Run Text="รหัส "/><Run Text="{Binding NpcId}"/><Run Text="  ตำแหน่ง "/><Run Text="{Binding X}"/><Run Text=","/><Run Text="{Binding Y}"/>
+                      </TextBlock>
+                    </StackPanel>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
               <Button x:Name="TalkNpcButton" Content="สนทนากับ NPC" Click="TalkNpc_Click" IsEnabled="False" />
               <TextBlock x:Name="NpcDialogText" TextWrapping="Wrap" Foreground="#D8E9EF" Margin="4,8" />
               <WrapPanel>
@@ -112,7 +123,7 @@
                 <TextBox x:Name="WarpYBox" Text="400" Width="95" ToolTip="Y" />
               </WrapPanel>
               <Button x:Name="WarpButton" Content="วาร์ปไปแผนที่" Click="Warp_Click" IsEnabled="False" Margin="4,10" />
-              <TextBlock Text="ขอบเขตทดสอบ 1600 × 1200; จุดเหลืองคือตัวเรา จุดฟ้าคือผู้เล่นอื่น"
+              <TextBlock Text="ขอบเขต 1600 × 1200; จุดเหลืองคือตัวเรา จุดฟ้าคือผู้เล่นอื่น วงแดงขอบทองคือ NPC"
                          TextWrapping="Wrap" Foreground="#8FA7B2" Margin="0,8" />
             </StackPanel>
           </Border>

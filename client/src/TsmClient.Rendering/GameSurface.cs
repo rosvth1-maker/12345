@@ -91,11 +91,28 @@ public sealed class GameSurface : FrameworkElement
         var road = new SolidColorBrush(Color.FromRgb(166, 137, 92));
         var water = new SolidColorBrush(Color.FromRgb(45, 116, 145));
         var building = new SolidColorBrush(Color.FromRgb(112, 71, 52));
-        dc.DrawRectangle(water, null, W(0, 1000, WorldWidth, 200));
-        dc.DrawRectangle(road, null, W(0, 710, WorldWidth, 90));
-        dc.DrawRectangle(road, null, W(540, 0, 90, WorldHeight));
-        foreach (var rect in new[] { W(410, 590, 110, 95), W(655, 590, 130, 100), W(700, 825, 150, 110), W(330, 835, 140, 100) })
-            dc.DrawRoundedRectangle(building, new Pen(Brushes.SandyBrown, 2), rect, 8, 8);
+        if (_mapId == 10802)
+        {
+            dc.DrawRectangle(new SolidColorBrush(Color.FromRgb(83, 112, 55)), null, W(0, 0, WorldWidth, WorldHeight));
+            Rect pond = W(1050, 50, 430, 310);
+            dc.DrawEllipse(new SolidColorBrush(Color.FromRgb(65, 129, 155)), null,
+                new Point(pond.X + pond.Width / 2, pond.Y + pond.Height / 2), pond.Width / 2, pond.Height / 2);
+            dc.DrawRoundedRectangle(road, null, W(0, 360, 1100, 85), 20, 20);
+            dc.DrawRoundedRectangle(road, null, W(620, 360, 85, 840), 20, 20);
+            for (int i = 0; i < 12; i++)
+            {
+                double x = 80 + i * 125;
+                dc.DrawEllipse(Brushes.DarkOliveGreen, new Pen(Brushes.ForestGreen, 3), new Point(x - camera.X, 170 + (i % 3) * 250 - camera.Y), 28, 28);
+            }
+        }
+        else
+        {
+            dc.DrawRectangle(water, null, W(0, 1000, WorldWidth, 200));
+            dc.DrawRectangle(road, null, W(0, 710, WorldWidth, 90));
+            dc.DrawRectangle(road, null, W(540, 0, 90, WorldHeight));
+            foreach (var rect in new[] { W(410, 590, 110, 95), W(655, 590, 130, 100), W(700, 825, 150, 110), W(330, 835, 140, 100) })
+                dc.DrawRoundedRectangle(building, new Pen(Brushes.SandyBrown, 2), rect, 8, 8);
+        }
         string mapName = _mapId switch { 10801 => "จัวจวิ้น — เมืองเริ่มต้น", 10802 => "ทุ่งฝึกยุทธ์", _ => $"แผนที่ {_mapId}" };
         DrawText(dc, mapName, new Point(Math.Max(20, ActualWidth - 260), 20), 18, Brushes.Gold);
     }

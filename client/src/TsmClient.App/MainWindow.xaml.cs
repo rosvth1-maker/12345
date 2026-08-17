@@ -31,6 +31,7 @@ public partial class MainWindow : Window
         _client.Disconnected += () => Dispatcher.Invoke(() => SetConnected(false));
         _keepaliveTimer.Tick += async (_, _) => await SendKeepaliveAsync();
         GameView.MoveRequested += async (x, y) => await MoveAsync(x, y);
+        ShowMapPreview(10801);
         Loaded += async (_, _) => await LoadSettingsAsync();
         Closed += async (_, _) => await _client.DisposeAsync();
         AddLog("เปิดตัวเกม TS Dark World Windows Client");
@@ -271,9 +272,9 @@ public partial class MainWindow : Window
             ApplySceneAsset(scene.MapId);
             NpcListBox.ItemsSource = _state.Npcs;
             RefreshWorldView();
-            SceneInfo.Text = $"แผนที่ {scene.MapId}\nตำแหน่ง {_state.Position.X}, {_state.Position.Y}\nผู้เล่นอื่น {scene.Players.Count} คน";
+            SceneInfo.Text = $"แผนที่ {scene.MapId}\nตำแหน่ง {_state.Position.X}, {_state.Position.Y}\nผู้เล่นอื่น {scene.Players.Count} คน\nNPC {scene.Npcs.Count} ตัว";
             FooterStatus.Text = $"{_state.LocalCharacterName} — แผนที่ {scene.MapId} — ผู้เล่น {scene.Players.Count + 1} คน";
-            AddLog($"รับ Scene แผนที่ {scene.MapId}: ผู้เล่นอื่น {scene.Players.Count} คน");
+            AddLog($"รับ Scene แผนที่ {scene.MapId}: ผู้เล่นอื่น {scene.Players.Count} คน, NPC {_state.Npcs.Count} ตัว");
         }
         catch (Exception ex) { AddLog($"อ่าน Scene ไม่สำเร็จ: {ex.Message}"); }
     }
@@ -323,6 +324,16 @@ public partial class MainWindow : Window
     {
         GameView.SetWorld(_state.Position.X, _state.Position.Y, _state.ScenePlayers.Values.Select(p => (p.CharacterId, p.Name, p.X, p.Y)));
         GameView.SetNpcs(_state.Npcs.Select(n => (n.NpcId, n.Name, n.X, n.Y)));
+    }
+
+    private void ShowMapPreview(int mapId)
+    {
+        var npcs = SceneNpcRegistry.ForMap(mapId);
+        GameView.SetSceneAsset(mapId, null, false);
+        GameView.SetWorld(570, 770, []);
+        GameView.SetNpcs(npcs.Select(n => (n.NpcId, n.Name, n.X, n.Y)));
+        NpcListBox.ItemsSource = npcs;
+        SceneInfo.Text = $"ตัวอย่างแผนที่ {mapId}\nเชื่อมต่อและเข้าตัวละครเพื่อรับข้อมูลจริงจาก Server\nNPC {npcs.Count} ตัว";
     }
 
     private void NpcList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) =>

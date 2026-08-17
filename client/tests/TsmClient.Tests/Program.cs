@@ -19,6 +19,7 @@ var tests = new List<(string Name, Action Run)>
     ,("Thai server names", ThaiServerNamesTest)
     ,("Asset format classification", AssetFormatClassification)
     ,("NPC and mission opcodes", NpcMissionOpcodes)
+    ,("Built-in NPC maps", BuiltInNpcMaps)
     ,("Battle command opcode", BattleCommandOpcode)
 };
 
@@ -170,6 +171,14 @@ static void NpcMissionOpcodes()
     Assert(np is { MainKind: 22, SubKind: 1 }, "wrong NPC opcode");
     var mission = ClientPackets.Mission(5001, 1).ToList(); FrameCodec.TryDecode(mission, out var mp);
     Assert(mp is { MainKind: 47, SubKind: 1 } && mp.Payload.Length == 5, "wrong mission packet");
+}
+
+static void BuiltInNpcMaps()
+{
+    var town = TsmClient.GameLogic.SceneNpcRegistry.ForMap(10801);
+    var field = TsmClient.GameLogic.SceneNpcRegistry.ForMap(10802);
+    Assert(town.Count >= 3 && town.All(x => x.X > 0 && x.Y > 0), "town NPCs missing");
+    Assert(field.Count >= 3 && field.Any(x => x.NpcId == 11001), "field NPCs missing");
 }
 static void BattleCommandOpcode()
 {
