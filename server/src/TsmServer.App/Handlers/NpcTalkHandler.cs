@@ -3,6 +3,7 @@ using TsmServer.Domain.Enums;
 using TsmServer.Domain.Interfaces;
 using TsmServer.Domain.Interfaces.Repositories;
 using TsmServer.Protocol;
+using TsmServer.App.Response;
 
 namespace TsmServer.App.Handlers;
 
@@ -30,7 +31,25 @@ public class NpcTalkHandler : IPacketHandler
         if (session.CharacterId == 0) return;
 
         var reader = new PacketReader(data.Span);
-        int npcId = reader.Remaining >= 4 ? reader.ReadInt32LE() : 10001;
+        if (reader.Remaining < 4)
+        {
+            await _responseSender.SendSystemNoticeAsync(session, "ข้อมูล NPC ไม่ถูกต้อง");
+            return;
+        }
+        int npcId = reader.ReadInt32LE();
+
+        SceneNpcInfo? placement = SceneNpcCatalog.Resolve(_gameData, session.CurrentMapId)
+            .FirstOrDefault(x => x.NpcId == npcId);
+        if (placement is null)
+        {
+            await _responseSender.SendSystemNoticeAsync(session, "ไม่พบ NPC นี้ในแผนที่ปัจจุบัน");
+            return;
+        }
+        if (!SceneNpcCatalog.IsWithinTalkRange(session.X, session.Y, placement))
+        {
+            await _responseSender.SendSystemNoticeAsync(session, $"กรุณาเดินเข้าใกล้ {placement.Name} ก่อนสนทนา");
+            return;
+        }
 
         string npcName = "NPC";
         string dialogText = "สวัสดีจอมยุทธ์! ยินดีต้อนรับสู่ดินแดน TS Dark World";
@@ -41,7 +60,7 @@ public class NpcTalkHandler : IPacketHandler
             dialogText = $"ข้าคือ {npcName} ยินดีที่ได้พบท่านในการผจญภัยครั้งนี้!";
         }
 
-        int questId = npcId switch { 10001 => 5001, 10002 => 5002, 10003 => 5003, _ => 0 };
+        int questId = placement.QuestId;
         string option = questId == 0 ? "ลาก่อน" : "รับภารกิจ";
         var writer = new PacketWriter()
             .WriteInt32LE(npcId)

@@ -13,6 +13,8 @@ public sealed class GameSurface : FrameworkElement
     private string _sceneAssetStatus = "Fallback graphic";
     private int _mapId;
     public event Action<short, short>? MoveRequested;
+    public event Action<int>? NpcSelected;
+    private int? _selectedNpcId;
 
     public GameSurface()
     {
@@ -22,6 +24,19 @@ public sealed class GameSurface : FrameworkElement
         {
             Point screen = e.GetPosition(this);
             Point world = ScreenToWorld(screen);
+            var npc = _npcs
+                .Select(n => (Npc: n, Distance: (n.Position - world).Length))
+                .Where(x => x.Distance <= 28)
+                .OrderBy(x => x.Distance)
+                .Select(x => x.Npc)
+                .FirstOrDefault();
+            if (npc != default)
+            {
+                _selectedNpcId = npc.Id;
+                InvalidateVisual();
+                NpcSelected?.Invoke(npc.Id);
+                return;
+            }
             short x = (short)Math.Clamp(Math.Round(world.X), 0, WorldWidth);
             short y = (short)Math.Clamp(Math.Round(world.Y), 0, WorldHeight);
             MoveRequested?.Invoke(x, y);
@@ -73,7 +88,9 @@ public sealed class GameSurface : FrameworkElement
         foreach (var npc in _npcs)
         {
             Point p = WorldToScreen(npc.Position);
-            dc.DrawEllipse(Brushes.OrangeRed, new Pen(Brushes.Gold, 3), p, 14, 14);
+            bool selected = npc.Id == _selectedNpcId;
+            dc.DrawEllipse(Brushes.OrangeRed, new Pen(selected ? Brushes.White : Brushes.Gold, selected ? 5 : 3), p,
+                selected ? 18 : 14, selected ? 18 : 14);
             DrawText(dc, $"NPC {npc.Name}", p + new Vector(18, -10), 14, Brushes.LightYellow);
         }
         Point local = WorldToScreen(_playerPosition);

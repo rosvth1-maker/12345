@@ -109,42 +109,13 @@ public class ResponseSenderImpl(GameDataManager gameData) : IResponseSender
                   .WriteByte((byte)p.Element);
         }
 
-        var npcs = gameData.EveScenes.TryGetValue(mapId, out var scene) && scene.Npcs.Count > 0
-            ? scene.Npcs
-                .Where(x => x.NpcId > 0)
-                .Select(x => (x.NpcId,
-                    Name: gameData.Npcs.TryGetValue(x.NpcId, out var def) ? def.Name : $"NPC #{x.NpcId}",
-                    X: Math.Clamp(x.X, 0, 1600), Y: Math.Clamp(x.Y, 0, 1200),
-                    QuestId: x.Events.FirstOrDefault()))
-                .ToList()
-            : BuiltInSceneNpcs(mapId);
+        var npcs = SceneNpcCatalog.Resolve(gameData, mapId);
         writer.WriteInt16LE((short)npcs.Count);
         foreach (var npc in npcs)
             writer.WriteInt32LE(npc.NpcId).WriteString(npc.Name, 32).WriteInt16LE((short)npc.X).WriteInt16LE((short)npc.Y).WriteInt32LE(npc.QuestId);
 
         var frame = FrameCodec.EncodeFrame(Opcodes.Scene, 1, writer.ToArray());
         await session.SendAsync(frame);
-    }
-
-    private List<(int NpcId, string Name, int X, int Y, int QuestId)> BuiltInSceneNpcs(int mapId)
-    {
-        string Name(int id, string fallback) => gameData.Npcs.TryGetValue(id, out var def) ? def.Name : fallback;
-        return mapId switch
-        {
-            10801 =>
-            [
-                (10001, Name(10001, "ครูฝึกมือใหม่ประจำเมือง"), 530, 730, 5001),
-                (10002, Name(10002, "ผู้ใหญ่บ้านจัวจวิ้น"), 610, 735, 5002),
-                (10003, Name(10003, "พ่อค้าเร่แห่งแดนสามก๊ก"), 575, 820, 5003)
-            ],
-            10802 =>
-            [
-                (11001, Name(11001, "บาโตวเยา"), 360, 430, 0),
-                (11002, Name(11002, "โจรผ้าเหลืองฝึกหัด"), 690, 520, 0),
-                (10001, Name(10001, "ครูฝึกมือใหม่ประจำเมือง"), 260, 350, 5001)
-            ],
-            _ => []
-        };
     }
 
     public async ValueTask SendInventoryAsync(IGameSession session, IReadOnlyList<ThingData> items)
