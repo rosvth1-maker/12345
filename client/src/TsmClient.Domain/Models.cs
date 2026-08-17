@@ -47,7 +47,12 @@ public sealed record ScenePlayer(
 public sealed record SceneSnapshot(int MapId, IReadOnlyList<ScenePlayer> Players, IReadOnlyList<NpcPlacement> Npcs);
 
 public sealed record PlayerMovement(int CharacterId, short X, short Y);
-public sealed record NpcPlacement(int NpcId, string Name, short X, short Y, int QuestId);
+public enum SceneNpcType : byte { Normal = 0, QuestGiver = 1, QuestTurnIn = 2, Shop = 3, Monster = 4 }
+public sealed record NpcPlacement(int NpcId, string Name, short X, short Y, int QuestId, SceneNpcType Type = SceneNpcType.Normal)
+{
+    public string Marker => Type switch { SceneNpcType.QuestGiver => "!", SceneNpcType.QuestTurnIn => "?", SceneNpcType.Shop => "$", SceneNpcType.Monster => "⚔", _ => "•" };
+    public string TypeName => Type switch { SceneNpcType.QuestGiver => "ผู้ให้ภารกิจ", SceneNpcType.QuestTurnIn => "ผู้รับภารกิจ", SceneNpcType.Shop => "ร้านค้า", SceneNpcType.Monster => "มอนสเตอร์", _ => "NPC ทั่วไป" };
+}
 public sealed record NpcDialog(int NpcId, string NpcName, string Text, IReadOnlyList<string> Options, int QuestId);
 public sealed record QuestState(int MissionId, string Title, byte Status, long Reward, string Message);
 public sealed record BattleState(int EnemyId, string EnemyName, int PlayerHp, int PlayerMaxHp, int PlayerSp, int PlayerMaxSp, int EnemyHp, int EnemyMaxHp, bool CompanionPresent);

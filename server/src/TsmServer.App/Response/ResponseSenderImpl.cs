@@ -112,7 +112,7 @@ public class ResponseSenderImpl(GameDataManager gameData) : IResponseSender
         var npcs = SceneNpcCatalog.Resolve(gameData, mapId);
         writer.WriteInt16LE((short)npcs.Count);
         foreach (var npc in npcs)
-            writer.WriteInt32LE(npc.NpcId).WriteString(npc.Name, 32).WriteInt16LE((short)npc.X).WriteInt16LE((short)npc.Y).WriteInt32LE(npc.QuestId);
+            writer.WriteInt32LE(npc.NpcId).WriteString(npc.Name, 32).WriteInt16LE((short)npc.X).WriteInt16LE((short)npc.Y).WriteInt32LE(npc.QuestId).WriteByte((byte)npc.Type);
 
         var frame = FrameCodec.EncodeFrame(Opcodes.Scene, 1, writer.ToArray());
         await session.SendAsync(frame);

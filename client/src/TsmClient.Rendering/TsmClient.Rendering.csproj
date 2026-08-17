@@ -3,4 +3,7 @@
     <TargetFramework>net9.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TsmClient.Domain\TsmClient.Domain.csproj" />
+  </ItemGroup>
 </Project>

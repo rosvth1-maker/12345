@@ -324,7 +324,7 @@ public partial class MainWindow : Window
     private void RefreshWorldView()
     {
         GameView.SetWorld(_state.Position.X, _state.Position.Y, _state.ScenePlayers.Values.Select(p => (p.CharacterId, p.Name, p.X, p.Y)));
-        GameView.SetNpcs(_state.Npcs.Select(n => (n.NpcId, n.Name, n.X, n.Y)));
+        GameView.SetNpcs(_state.Npcs.Select(n => (n.NpcId, n.Name, n.X, n.Y, n.Type)));
     }
 
     private void ShowMapPreview(int mapId)
@@ -332,7 +332,7 @@ public partial class MainWindow : Window
         var npcs = SceneNpcRegistry.ForMap(mapId);
         GameView.SetSceneAsset(mapId, null, false);
         GameView.SetWorld(570, 770, []);
-        GameView.SetNpcs(npcs.Select(n => (n.NpcId, n.Name, n.X, n.Y)));
+        GameView.SetNpcs(npcs.Select(n => (n.NpcId, n.Name, n.X, n.Y, n.Type)));
         NpcListBox.ItemsSource = npcs;
         SceneInfo.Text = $"ตัวอย่างแผนที่ {mapId}\nเชื่อมต่อและเข้าตัวละครเพื่อรับข้อมูลจริงจาก Server\nNPC {npcs.Count} ตัว";
     }

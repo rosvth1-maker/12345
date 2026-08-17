@@ -20,6 +20,7 @@ var tests = new List<(string Name, Action Run)>
     ,("Asset format classification", AssetFormatClassification)
     ,("NPC and mission opcodes", NpcMissionOpcodes)
     ,("Built-in NPC maps", BuiltInNpcMaps)
+    ,("Typed NPC scene", TypedNpcScene)
     ,("Battle command opcode", BattleCommandOpcode)
 };
 
@@ -179,6 +180,14 @@ static void BuiltInNpcMaps()
     var field = TsmClient.GameLogic.SceneNpcRegistry.ForMap(10802);
     Assert(town.Count >= 3 && town.All(x => x.X > 0 && x.Y > 0), "town NPCs missing");
     Assert(field.Count >= 3 && field.Any(x => x.NpcId == 11001), "field NPCs missing");
+}
+
+static void TypedNpcScene()
+{
+    var payload = new PacketWriter().WriteInt32(10801).WriteInt16(0).WriteInt16(1)
+        .WriteInt32(10003).WriteFixedString("พ่อค้า", 32).WriteInt16(575).WriteInt16(820).WriteInt32(5003).WriteByte(3).ToArray();
+    var scene = ServerPackets.ReadScene(payload);
+    Assert(scene.Npcs.Count == 1 && scene.Npcs[0].Type == TsmClient.Domain.SceneNpcType.Shop && scene.Npcs[0].Marker == "$", "NPC type missing");
 }
 static void BattleCommandOpcode()
 {
