@@ -158,7 +158,18 @@ public static class ServerPackets
         {
             int npcCount = reader.ReadInt16();
             if (npcCount < 0 || reader.Remaining < npcCount * 44) throw new InvalidDataException("จำนวน NPC ใน Scene ไม่ถูกต้อง");
-            for (int i = 0; i < npcCount; i++) npcs.Add(new(reader.ReadInt32(), reader.ReadFixedString(32), reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt32()));
+            bool hasNpcTypes = npcCount > 0 && reader.Remaining >= npcCount * 45;
+            for (int i = 0; i < npcCount; i++)
+            {
+                int npcId = reader.ReadInt32();
+                string name = reader.ReadFixedString(32);
+                short x = reader.ReadInt16();
+                short y = reader.ReadInt16();
+                int questId = reader.ReadInt32();
+                var type = hasNpcTypes ? (SceneNpcType)reader.ReadByte() : SceneNpcType.Normal;
+                if (!Enum.IsDefined(type)) type = SceneNpcType.Normal;
+                npcs.Add(new(npcId, name, x, y, questId, type));
+            }
         }
         return new SceneSnapshot(mapId, players, npcs);
     }

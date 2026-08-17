@@ -101,9 +101,9 @@
                 <ListBox.ItemTemplate>
                   <DataTemplate>
                     <StackPanel Margin="3">
-                      <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                      <TextBlock FontWeight="SemiBold" TextTrimming="CharacterEllipsis"><Run Text="{Binding Marker}"/><Run Text=" "/><Run Text="{Binding Name}"/></TextBlock>
                       <TextBlock Foreground="#607D8B" FontSize="11">
-                        <Run Text="รหัส "/><Run Text="{Binding NpcId}"/><Run Text="  ตำแหน่ง "/><Run Text="{Binding X}"/><Run Text=","/><Run Text="{Binding Y}"/>
+                        <Run Text="{Binding TypeName}"/><Run Text=" · รหัส "/><Run Text="{Binding NpcId}"/><Run Text=" · "/><Run Text="{Binding X}"/><Run Text=","/><Run Text="{Binding Y}"/>
                       </TextBlock>
                     </StackPanel>
                   </DataTemplate>

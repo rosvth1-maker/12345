@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Media;
+using TsmClient.Domain;
 
 namespace TsmClient.Rendering;
 
@@ -9,7 +10,7 @@ public sealed class GameSurface : FrameworkElement
     private const double WorldHeight = 1200;
     private Point _playerPosition = new(570, 770);
     private IReadOnlyList<(int Id, string Name, Point Position)> _otherPlayers = [];
-    private IReadOnlyList<(int Id, string Name, Point Position)> _npcs = [];
+    private IReadOnlyList<(int Id, string Name, Point Position, SceneNpcType Type)> _npcs = [];
     private string _sceneAssetStatus = "Fallback graphic";
     private int _mapId;
     public event Action<short, short>? MoveRequested;
@@ -50,9 +51,9 @@ public sealed class GameSurface : FrameworkElement
         _otherPlayers = players.Select(p => (p.Id, p.Name, new Point(p.X, p.Y))).ToArray();
         InvalidateVisual();
     }
-    public void SetNpcs(IEnumerable<(int Id, string Name, short X, short Y)> npcs)
+    public void SetNpcs(IEnumerable<(int Id, string Name, short X, short Y, SceneNpcType Type)> npcs)
     {
-        _npcs = npcs.Select(n => (n.Id, n.Name, new Point(n.X, n.Y))).ToArray();
+        _npcs = npcs.Select(n => (n.Id, n.Name, new Point(n.X, n.Y), n.Type)).ToArray();
         InvalidateVisual();
     }
 
@@ -89,8 +90,11 @@ public sealed class GameSurface : FrameworkElement
         {
             Point p = WorldToScreen(npc.Position);
             bool selected = npc.Id == _selectedNpcId;
-            dc.DrawEllipse(Brushes.OrangeRed, new Pen(selected ? Brushes.White : Brushes.Gold, selected ? 5 : 3), p,
+            Brush fill = npc.Type switch { SceneNpcType.Shop => Brushes.MediumSeaGreen, SceneNpcType.Monster => Brushes.IndianRed, SceneNpcType.QuestTurnIn => Brushes.MediumPurple, _ => Brushes.DarkOrange };
+            string marker = npc.Type switch { SceneNpcType.QuestGiver => "!", SceneNpcType.QuestTurnIn => "?", SceneNpcType.Shop => "$", SceneNpcType.Monster => "⚔", _ => "•" };
+            dc.DrawEllipse(fill, new Pen(selected ? Brushes.White : Brushes.Gold, selected ? 5 : 3), p,
                 selected ? 18 : 14, selected ? 18 : 14);
+            DrawText(dc, marker, p + new Vector(-5, -13), 16, Brushes.White);
             DrawText(dc, $"NPC {npc.Name}", p + new Vector(18, -10), 14, Brushes.LightYellow);
         }
         Point local = WorldToScreen(_playerPosition);

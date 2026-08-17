@@ -16,6 +16,8 @@ public class SceneNpcCatalogTests
 
         Assert.Contains(town, x => x.NpcId == 10001);
         Assert.Contains(field, x => x.NpcId == 11001);
+        Assert.Contains(town, x => x.NpcId == 10003 && x.Type == SceneNpcType.Shop);
+        Assert.Contains(field, x => x.NpcId == 11001 && x.Type == SceneNpcType.Monster);
     }
 
     [Theory]

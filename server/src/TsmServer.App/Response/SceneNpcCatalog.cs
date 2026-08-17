@@ -2,7 +2,8 @@ using TsmServer.Data;
 
 namespace TsmServer.App.Response;
 
-public sealed record SceneNpcInfo(int NpcId, string Name, int X, int Y, int QuestId);
+public enum SceneNpcType : byte { Normal = 0, QuestGiver = 1, QuestTurnIn = 2, Shop = 3, Monster = 4 }
+public sealed record SceneNpcInfo(int NpcId, string Name, int X, int Y, int QuestId, SceneNpcType Type = SceneNpcType.Normal);
 
 public static class SceneNpcCatalog
 {
@@ -16,7 +17,7 @@ public static class SceneNpcCatalog
                 .Where(x => x.NpcId > 0)
                 .Select(x => new SceneNpcInfo(x.NpcId,
                     gameData.Npcs.TryGetValue(x.NpcId, out var def) ? def.Name : $"NPC #{x.NpcId}",
-                    Math.Clamp(x.X, 0, 1600), Math.Clamp(x.Y, 0, 1200), x.Events.FirstOrDefault()))
+                    Math.Clamp(x.X, 0, 1600), Math.Clamp(x.Y, 0, 1200), x.Events.FirstOrDefault(), Classify(x.NpcId, x.Events.FirstOrDefault())))
                 .ToArray();
             if (loaded.Length > 0) return loaded;
         }
@@ -26,19 +27,22 @@ public static class SceneNpcCatalog
         {
             10801 =>
             [
-                new(10001, Name(10001, "ครูฝึกมือใหม่ประจำเมือง"), 530, 730, 5001),
-                new(10002, Name(10002, "ผู้ใหญ่บ้านจัวจวิ้น"), 610, 735, 5002),
-                new(10003, Name(10003, "พ่อค้าเร่แห่งแดนสามก๊ก"), 575, 820, 5003)
+                new(10001, Name(10001, "ครูฝึกมือใหม่ประจำเมือง"), 530, 730, 5001, SceneNpcType.QuestGiver),
+                new(10002, Name(10002, "ผู้ใหญ่บ้านจัวจวิ้น"), 610, 735, 5002, SceneNpcType.QuestGiver),
+                new(10003, Name(10003, "พ่อค้าเร่แห่งแดนสามก๊ก"), 575, 820, 5003, SceneNpcType.Shop)
             ],
             10802 =>
             [
-                new(11001, Name(11001, "บาโตวเยา"), 360, 430, 0),
-                new(11002, Name(11002, "โจรผ้าเหลืองฝึกหัด"), 690, 520, 0),
-                new(10001, Name(10001, "ครูฝึกมือใหม่ประจำเมือง"), 260, 350, 5001)
+                new(11001, Name(11001, "บาโตวเยา"), 360, 430, 0, SceneNpcType.Monster),
+                new(11002, Name(11002, "โจรผ้าเหลืองฝึกหัด"), 690, 520, 0, SceneNpcType.Monster),
+                new(10001, Name(10001, "ครูฝึกมือใหม่ประจำเมือง"), 260, 350, 5001, SceneNpcType.QuestGiver)
             ],
             _ => []
         };
     }
+
+    private static SceneNpcType Classify(int npcId, int questId) =>
+        npcId == 10003 ? SceneNpcType.Shop : npcId >= 11000 ? SceneNpcType.Monster : questId > 0 ? SceneNpcType.QuestGiver : SceneNpcType.Normal;
 
     public static bool IsWithinTalkRange(int playerX, int playerY, SceneNpcInfo npc) =>
         DistanceSquared(playerX, playerY, npc.X, npc.Y) <= TalkRange * TalkRange;
