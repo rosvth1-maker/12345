@@ -1,0 +1,22 @@
+{
+  "ServerName": "TS Dark World",
+  "Host": "127.0.0.1",
+  "Port": 6613,
+  "ClientVersion": 258,
+  "AssetDirectory": "C:\\Users\\Administrator\\Documents\\Codex\\ตัวเกมTS ไทย 26-8-2569\\files",
+  "ServerDirectory": "C:\\Users\\Administrator\\Documents\\Codex\\TS Dark World online Server new 2026",
+  "ActiveProfile": "Local",
+  "CdnBaseUrl": "http://127.0.0.1:8443",
+  "RenderQuality": 2,
+  "MasterVolume": 80,
+  "Fullscreen": false,
+  "MoveUpKey": "W",
+  "MoveDownKey": "S",
+  "MoveLeftKey": "A",
+  "MoveRightKey": "D",
+  "Profiles": [
+    { "Name": "Local", "Host": "127.0.0.1", "Port": 6613, "CdnBaseUrl": "http://127.0.0.1:8443" },
+    { "Name": "LAN", "Host": "192.168.1.100", "Port": 6613, "CdnBaseUrl": "http://192.168.1.100:8443" },
+    { "Name": "VPS", "Host": "game.example.com", "Port": 6613, "CdnBaseUrl": "https://cdn.example.com" }
+  ]
+}

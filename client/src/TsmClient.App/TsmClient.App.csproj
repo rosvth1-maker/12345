@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>TS Dark World</AssemblyName>
+    <RootNamespace>TsmClient.App</RootNamespace>
+    <Version>0.8.0-test.1</Version>
+    <AssemblyVersion>0.8.0.0</AssemblyVersion>
+    <FileVersion>0.8.0.1</FileVersion>
+    <InformationalVersion>0.8.0-test.1+20260817.035558</InformationalVersion>
+    <Product>TS Dark World Windows Client</Product>
+    <Description>TS Dark World Phase 8A unified local test client</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TsmClient.Data\TsmClient.Data.csproj" />
+    <ProjectReference Include="..\TsmClient.Domain\TsmClient.Domain.csproj" />
+    <ProjectReference Include="..\TsmClient.GameLogic\TsmClient.GameLogic.csproj" />
+    <ProjectReference Include="..\TsmClient.Network\TsmClient.Network.csproj" />
+    <ProjectReference Include="..\TsmClient.Protocol\TsmClient.Protocol.csproj" />
+    <ProjectReference Include="..\TsmClient.Rendering\TsmClient.Rendering.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\config\clientsettings.json" Link="config\clientsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="..\..\config\build-info.json" Link="config\build-info.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

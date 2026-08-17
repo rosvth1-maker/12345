@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\TsmServer.Domain\TsmServer.Domain.csproj" />
+    <ProjectReference Include="..\TsmServer.Protocol\TsmServer.Protocol.csproj" />
+    <ProjectReference Include="..\TsmServer.Data\TsmServer.Data.csproj" />
+    <ProjectReference Include="..\TsmServer.Persistence\TsmServer.Persistence.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

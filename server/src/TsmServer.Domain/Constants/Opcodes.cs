@@ -1,0 +1,67 @@
+namespace TsmServer.Domain.Constants;
+
+public static class Opcodes
+{
+    public const int Disconnect = 0;
+    public const int Login = 1;
+    public const int Chat = 2;
+    public const int Character = 3;
+    public const int PlayerStatus = 5;
+    public const int Move = 6;
+    public const int Scene = 7;
+    public const int Battle = 8;
+    public const int CreateChar = 9;
+    public const int Keepalive = 10;
+    public const int BattleManage = 11;
+    public const int Relocate = 12;
+    public const int Party = 13;
+    public const int Friend = 14;
+    public const int FollowNpc = 15;
+    public const int GmQuiz = 16;
+    public const int FollowNpcDeploy = 19;
+    public const int NpcEvent = 20;
+    public const int MapNpc = 22;
+    public const int Shop = 23;
+    public const int Mark = 24;
+    public const int Trade = 25;
+    public const int Money = 26;
+    public const int NpcTrade = 27;
+    public const int SkillUpgrade = 28;
+    public const int BankControl = 29;
+    public const int Bank = 30;
+    public const int Inn = 31;
+    public const int Emote = 32;
+    public const int PkSetting = 33;
+    public const int CrossServer = 35;
+    public const int Challenge = 36;
+    public const int Hotkey = 40;
+    public const int Mission = 47;
+    public const int BattleCommand = 50;
+    public const int Reconnect = 50;
+    public const int BattleAttrChange = 51;
+    public const int BattleCountdown = 52;
+    public const int BattleStatus = 53;
+    public const int SceneObject = 63;
+    public const int MachineBox = 65;
+    public const int Arena = 66;
+    public const int Teleport = 68;
+    public const int Mount = 79;
+    public const int ForeverFlag = 81;
+    public const int Achievement = 82;
+    public const int Mail = 83;
+    public const int RoleCountSystem = 85;
+    public const int Dispatch = 86;
+    public const int Leaderboard = 88;
+    public const int RoleCount = 100;
+    public const int Storage = 102;
+    public const int Elf = 110;
+    public const int WarriorRepo = 122;
+    public const int Debug = 199;
+
+    public const int DefaultStartMap = 10801;
+    public const int DefaultStartX = 570;
+    public const int DefaultStartY = 770;
+    public const int ClientVersion = 258;
+    public const int DefaultPort = 6613;
+    public const int HeartbeatInterval = 20;
+}

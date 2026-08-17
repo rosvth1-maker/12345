@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TsmClient.Domain\TsmClient.Domain.csproj" />
+    <ProjectReference Include="..\..\src\TsmClient.Protocol\TsmClient.Protocol.csproj" />
+  </ItemGroup>
+</Project>
