@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\TsmServer.Domain\TsmServer.Domain.csproj" />
+    <ProjectReference Include="..\TsmServer.Protocol\TsmServer.Protocol.csproj" />
+    <ProjectReference Include="..\TsmServer.Data\TsmServer.Data.csproj" />
+    <ProjectReference Include="..\TsmServer.Persistence\TsmServer.Persistence.csproj" />
+    <ProjectReference Include="..\TsmServer.GameLogic\TsmServer.GameLogic.csproj" />
+    <ProjectReference Include="..\TsmServer.Network\TsmServer.Network.csproj" />
+    <ProjectReference Include="..\TsmServer.App\TsmServer.App.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="icon.ico" />
+  </ItemGroup>
+</Project>

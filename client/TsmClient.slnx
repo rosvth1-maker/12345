@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TsmClient.App/TsmClient.App.csproj" />
+    <Project Path="src/TsmClient.Data/TsmClient.Data.csproj" />
+    <Project Path="src/TsmClient.Domain/TsmClient.Domain.csproj" />
+    <Project Path="src/TsmClient.GameLogic/TsmClient.GameLogic.csproj" />
+    <Project Path="src/TsmClient.Network/TsmClient.Network.csproj" />
+    <Project Path="src/TsmClient.Protocol/TsmClient.Protocol.csproj" />
+    <Project Path="src/TsmClient.Rendering/TsmClient.Rendering.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TsmClient.Phase1Integration/TsmClient.Phase1Integration.csproj" />
+    <Project Path="tests/TsmClient.Phase2Integration/TsmClient.Phase2Integration.csproj" />
+    <Project Path="tests/TsmClient.Phase3Integration/TsmClient.Phase3Integration.csproj" />
+    <Project Path="tests/TsmClient.Phase4Integration/TsmClient.Phase4Integration.csproj" />
+    <Project Path="tests/TsmClient.Phase5Integration/TsmClient.Phase5Integration.csproj" />
+    <Project Path="tests/TsmClient.Phase6Integration/TsmClient.Phase6Integration.csproj" />
+    <Project Path="tests/TsmClient.Phase7Integration/TsmClient.Phase7Integration.csproj" />
+    <Project Path="tests/TsmClient.Tests/TsmClient.Tests.csproj" />
+  </Folder>
+</Solution>

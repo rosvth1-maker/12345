@@ -1,0 +1,43 @@
+{
+  "Server": {
+    "ServerName": "TS Dark World",
+    "Host": "127.0.0.1",
+    "Port": 6613,
+    "CdnPort": 8443,
+    "MaxConnections": 1000,
+    "Version": 258,
+    "Protocol": "DirectTcpSocket",
+    "Description": "เซิร์ฟเวอร์ TS Dark World ภาษาไทย 100% เชื่อมต่อตรงผ่าน Socket พอร์ต 6613"
+  },
+  "Database": {
+    "Provider": "MySQL",
+    "Server": "localhost",
+    "Port": 3306,
+    "Database": "tsm_dodo",
+    "UserId": "root",
+    "Password": "",
+    "ConnectionString": "Server=localhost;Port=3306;Database=tsm_dodo;Uid=root;Pwd=;AllowUserVariables=True;CharSet=utf8mb4;",
+    "AutoInitialize": true,
+    "AutoBackup": true,
+    "BackupDirectory": "SQL\\Backups",
+    "Description": "การเชื่อมต่อฐานข้อมูล MySQL สำหรับ XAMPP (Localhost พอร์ต 3306 บัญชี root)"
+  },
+  "Rates": {
+    "ExpMultiplier": 1,
+    "DropMultiplier": 1,
+    "GoldMultiplier": 1,
+    "PetExpMultiplier": 1
+  },
+  "GameData": {
+    "DataDirectory": "DATA\\Data",
+    "EveDirectory": "DATA\\Data\\Eve",
+    "Encoding": "windows-874",
+    "Language": "Thai",
+    "Description": "โฟลเดอร์ไฟล์ข้อมูลเกมภาษาไทย 308 ไฟล์ และระบบเควสต์ Eve.emg 10.5MB"
+  },
+  "Logging": {
+    "LogLevel": "Information",
+    "LogToFile": true,
+    "LogDirectory": "logs"
+  }
+}

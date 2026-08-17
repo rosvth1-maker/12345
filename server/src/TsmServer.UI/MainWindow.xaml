@@ -1,0 +1,1030 @@
+<Window x:Class="TsmServer.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ระบบบริหารจัดการเซิร์ฟเวอร์ TS Dark World — .NET 9"
+        Icon="icon.ico"
+        Height="790" Width="1220"
+        MinHeight="680" MinWidth="1020"
+        WindowStartupLocation="CenterScreen"
+        Background="#1A1D24"
+        Foreground="#F8FAFC"
+        TextOptions.TextFormattingMode="Display"
+        RenderOptions.ClearTypeHint="Enabled"
+        FontFamily="Segoe UI, Tahoma, Leelawadee UI, Microsoft Sans Serif">
+    <Window.Resources>
+        <!-- Palette Brushes -->
+        <SolidColorBrush x:Key="PrimaryColor" Color="#0284C7"/>
+        <SolidColorBrush x:Key="SuccessColor" Color="#10B981"/>
+        <SolidColorBrush x:Key="DangerColor" Color="#EF4444"/>
+        <SolidColorBrush x:Key="WarningColor" Color="#F59E0B"/>
+        <SolidColorBrush x:Key="AccentColor" Color="#38BDF8"/>
+        <SolidColorBrush x:Key="DarkBg" Color="#11141A"/>
+        <SolidColorBrush x:Key="SurfaceBg" Color="#1E232E"/>
+        <SolidColorBrush x:Key="InputBg" Color="#2A3241"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#4A5568"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="#CBD5E1"/>
+
+        <!-- Global TextBox Style (100% Crisp White Text & Slate Grey Background) -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="#2A3241"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="CaretBrush" Value="#38BDF8"/>
+            <Setter Property="SelectionBrush" Value="#0284C7"/>
+            <Setter Property="BorderBrush" Value="#4A5568"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontSize" Value="13.5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4" SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Margin="0" Padding="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="true">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#38BDF8"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="1.5"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="border" Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ComboBox Toggle Button Template -->
+        <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="28" />
+                </Grid.ColumnDefinitions>
+                <Border x:Name="Border" Grid.ColumnSpan="2" CornerRadius="4"
+                        Background="#2A3241" BorderBrush="#4A5568" BorderThickness="1" />
+                <Border Grid.Column="0" Margin="1" Background="#2A3241" CornerRadius="4,0,0,4" />
+                <Path x:Name="Arrow" Grid.Column="1" Fill="#38BDF8" HorizontalAlignment="Center" VerticalAlignment="Center"
+                      Data="M 0 0 L 4 4 L 8 0 Z" />
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter TargetName="Border" Property="Background" Value="#374151" />
+                    <Setter TargetName="Border" Property="BorderBrush" Value="#38BDF8" />
+                    <Setter TargetName="Arrow" Property="Fill" Value="#FFFFFF" />
+                </Trigger>
+                <Trigger Property="IsChecked" Value="true">
+                    <Setter TargetName="Border" Property="Background" Value="#1E2430" />
+                    <Setter TargetName="Border" Property="BorderBrush" Value="#38BDF8" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="false">
+                    <Setter TargetName="Border" Property="Opacity" Value="0.5" />
+                    <Setter TargetName="Arrow" Property="Fill" Value="#888888" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <!-- Global ComboBox Style (100% Dark Grey / Slate Background & Ultra-Clear White Text) -->
+        <Style TargetType="{x:Type ComboBox}">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="#2A3241" />
+            <Setter Property="BorderBrush" Value="#4A5568" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+            <Setter Property="Padding" Value="8,5" />
+            <Setter Property="FontSize" Value="13.5" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBox}">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}"
+                                          Grid.Column="2" Focusable="false"
+                                          IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          ClickMode="Press" />
+                            <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False"
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                              Margin="10,3,28,3"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Left" />
+                            <Popup x:Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
+                                <Grid x:Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder" Background="#1E2430" BorderBrush="#38BDF8" BorderThickness="1.5" CornerRadius="4" Margin="0,2,0,4">
+                                        <ScrollViewer Margin="2" SnapsToDevicePixels="True">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                        </ScrollViewer>
+                                    </Border>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="false">
+                                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="#888888" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Global ComboBoxItem Style (Slate Grey Background with Crisp White Text in All States) -->
+        <Style TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="#1E2430" />
+            <Setter Property="Padding" Value="10,7" />
+            <Setter Property="FontSize" Value="13.5" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                        <Border x:Name="ItemBorder" Background="{TemplateBinding Background}"
+                                BorderThickness="0,0,0,1" BorderBrush="#2D3748"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#0284C7" />
+                                <Setter Property="Foreground" Value="#FFFFFF" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#0369A1" />
+                                <Setter Property="Foreground" Value="#FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Global Button Style -->
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#2D3748"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#4A5568"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="btnBorder" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="btnBorder" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="btnBorder" Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="btnBorder" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Global GroupBox Style -->
+        <Style TargetType="GroupBox">
+            <Setter Property="BorderBrush" Value="#3E4756"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#38BDF8"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13.5"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- ส่วนหัวและปุ่มควบคุมหลัก -->
+            <RowDefinition Height="Auto"/> <!-- การ์ดแสดงสถานะและข้อมูลระบบ -->
+            <RowDefinition Height="*"/>    <!-- แท็บเนื้อหาเครื่องมือต่างๆ -->
+            <RowDefinition Height="Auto"/> <!-- แถบสถานะด้านล่าง -->
+        </Grid.RowDefinitions>
+
+        <!-- 1. ส่วนหัวและปุ่มควบคุมหลัก -->
+        <Border Grid.Row="0" Background="#13151A" BorderBrush="#333A48" BorderThickness="0,0,0,1" Padding="20,14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Background="#222630" CornerRadius="8" Padding="8,6" Margin="0,0,14,0" BorderBrush="#38BDF8" BorderThickness="1">
+                        <TextBlock Text="⚔️" FontSize="26" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="TS Dark World Server" FontSize="20" FontWeight="Bold" Foreground="#38BDF8"/>
+                            <Border Background="#222630" BorderBrush="#34D399" BorderThickness="1" CornerRadius="5" Padding="8,2" Margin="12,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="ระบบจัดการภาษาไทย 100%" FontSize="11" FontWeight="Bold" Foreground="#34D399"/>
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Text="โปรแกรมเซิร์ฟเวอร์จำลอง C# .NET 9 • รุ่นพิเศษ TS Dark World" FontSize="13" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- ปุ่มควบคุมการทำงานของเซิร์ฟเวอร์ -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button x:Name="BtnStartServer" Content="▶ เริ่มเปิดเซิร์ฟเวอร์" Background="#059669" Foreground="#FFFFFF" FontWeight="Bold" Padding="16,9" Margin="0,0,8,0" Click="BtnStartServer_Click"/>
+                    <Button x:Name="BtnStopServer" Content="⏹ หยุดเซิร์ฟเวอร์" Background="#DC2626" Foreground="#FFFFFF" FontWeight="Bold" Padding="16,9" IsEnabled="False" Margin="0,0,8,0" Click="BtnStopServer_Click"/>
+                    <Button x:Name="BtnRestartServer" Content="🔄 รีสตาร์ทเซิร์ฟเวอร์" Background="#D97706" Foreground="#FFFFFF" FontWeight="Bold" Padding="16,9" IsEnabled="False" Click="BtnRestartServer_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 2. การ์ดแสดงสถานะและข้อมูลระบบ (สบายตา ตัวหนังสือชัดเจน) -->
+        <Grid Grid.Row="1" Margin="16,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- การ์ด 1: สถานะเซิร์ฟเวอร์ -->
+            <Border Grid.Column="0" Background="#222630" BorderBrush="#333A48" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,8,0">
+                <StackPanel>
+                    <TextBlock Text="สถานะเซิร์ฟเวอร์" FontSize="12" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                    <TextBlock x:Name="TxtServerStatus" Text="🔴 ปิดทำงานอยู่" FontSize="15" FontWeight="Bold" Foreground="#F87171" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- การ์ด 2: พอร์ตที่ให้บริการ -->
+            <Border Grid.Column="1" Background="#222630" BorderBrush="#333A48" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,8,0">
+                <StackPanel>
+                    <TextBlock Text="พอร์ตให้บริการ" FontSize="12" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                    <TextBlock x:Name="TxtPort" Text="เกม 6613 | แพตช์ 8443" FontSize="14" FontWeight="Bold" Foreground="#38BDF8" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- การ์ด 3: จำนวนผู้เล่นออนไลน์ -->
+            <Border Grid.Column="2" Background="#222630" BorderBrush="#333A48" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,8,0">
+                <StackPanel>
+                    <TextBlock Text="ผู้เล่นออนไลน์" FontSize="12" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                    <TextBlock x:Name="TxtOnlineCount" Text="0 คน" FontSize="15" FontWeight="Bold" Foreground="#34D399" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- การ์ด 4: ปริมาณแรมที่ใช้ -->
+            <Border Grid.Column="3" Background="#222630" BorderBrush="#333A48" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,8,0">
+                <StackPanel>
+                    <TextBlock Text="การใช้หน่วยความจำ (RAM)" FontSize="12" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                    <TextBlock x:Name="TxtRamUsage" Text="0.0 MB" FontSize="15" FontWeight="Bold" Foreground="#F8FAFC" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- การ์ด 5: อัตราคูณเซิร์ฟเวอร์ -->
+            <Border Grid.Column="4" Background="#222630" BorderBrush="#333A48" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,8,0">
+                <StackPanel>
+                    <TextBlock Text="อัตราคูณในเกม" FontSize="12" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                    <TextBlock x:Name="TxtRates" Text="EXP x5 • ดรอป x3" FontSize="14" FontWeight="Bold" Foreground="#FBBF24" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- การ์ด 6: เวลาเปิดต่อเนื่อง -->
+            <Border Grid.Column="5" Background="#222630" BorderBrush="#333A48" BorderThickness="1" CornerRadius="8" Padding="14,10">
+                <StackPanel>
+                    <TextBlock Text="เวลาเปิดต่อเนื่อง" FontSize="12" FontWeight="SemiBold" Foreground="#94A3B8"/>
+                    <TextBlock x:Name="TxtUptime" Text="00:00:00" FontSize="15" FontWeight="Bold" Foreground="#E2E8F0" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- 3. แท็บเครื่องมือต่างๆ -->
+        <TabControl Grid.Row="2" Margin="16,0,16,10" Background="#1A1D24" BorderBrush="#333A48">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Background" Value="#222630"/>
+                    <Setter Property="Foreground" Value="#CBD5E1"/>
+                    <Setter Property="FontSize" Value="13"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="Padding" Value="16,9"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="#333A48" BorderThickness="1,1,1,0" CornerRadius="6,6,0,0" Margin="0,0,4,0" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter ContentSource="Header" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="#2B303C"/>
+                                        <Setter Property="Foreground" Value="#38BDF8"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+
+            <!-- แท็บ 1: จัดการผู้เล่นออนไลน์ -->
+            <TabItem Header="👥 จัดการผู้เล่นออนไลน์">
+                <Border Background="#222630" Margin="0,4,0,0" BorderBrush="#333A48" BorderThickness="1" CornerRadius="0,6,6,6">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- แถบค้นหา -->
+                        <Border Grid.Row="0" Background="#1B1E26" BorderBrush="#333A48" BorderThickness="0,0,0,1" Padding="14,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="260"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="ค้นหาชื่อตัวละคร / ชื่อบัญชี:" Foreground="#CBD5E1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <TextBox x:Name="TxtSearchPlayer" Grid.Column="1" Height="30" VerticalContentAlignment="Center" TextChanged="TxtSearchPlayer_TextChanged"/>
+                                <StackPanel Grid.Column="3" Orientation="Horizontal">
+                                    <Button Content="🔄 รีเฟรชรายชื่อ" Padding="12,5" Click="BtnRefreshPlayers_Click"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- ตารางแสดงรายชื่อผู้เล่น -->
+                        <DataGrid x:Name="GridPlayers" Grid.Row="1" Background="#16181E" Foreground="#FFFFFF" RowBackground="#1F232D" AlternatingRowBackground="#262B37"
+                                  BorderBrush="#333A48" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
+                                  GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#333A48" SelectionMode="Single" FontSize="13">
+                            <DataGrid.Resources>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="Background" Value="#13151A"/>
+                                    <Setter Property="Foreground" Value="#38BDF8"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="Padding" Value="8,6"/>
+                                    <Setter Property="BorderBrush" Value="#333A48"/>
+                                    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                                </Style>
+                            </DataGrid.Resources>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="รหัสตัวละคร" Binding="{Binding CharacterId}" Width="90"/>
+                                <DataGridTextColumn Header="ชื่อบัญชี" Binding="{Binding Account}" Width="120"/>
+                                <DataGridTextColumn Header="ชื่อตัวละคร" Binding="{Binding Name}" Width="140"/>
+                                <DataGridTextColumn Header="เลเวล" Binding="{Binding Level}" Width="70"/>
+                                <DataGridTextColumn Header="ธาตุ" Binding="{Binding ElementStr}" Width="105"/>
+                                <DataGridTextColumn Header="รหัสแผนที่" Binding="{Binding MapId}" Width="90"/>
+                                <DataGridTextColumn Header="พิกัด (X, Y)" Binding="{Binding PositionStr}" Width="110"/>
+                                <DataGridTextColumn Header="พลังชีวิต / มานา (HP/SP)" Binding="{Binding HpSpStr}" Width="150"/>
+                                <DataGridTextColumn Header="เงินในตัว (ทอง)" Binding="{Binding Gold, StringFormat={}{0:N0}}" Width="125"/>
+                                <DataGridTextColumn Header="ระดับ GM" Binding="{Binding GmLevel}" Width="80"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!-- แผงเครื่องมือจัดการตัวละครที่เลือก -->
+                        <Border Grid.Row="2" Background="#1B1E26" BorderBrush="#333A48" BorderThickness="0,1,0,0" Padding="14,12">
+                            <WrapPanel VerticalAlignment="Center">
+                                <TextBlock Text="จัดการตัวละครที่เลือก:" VerticalAlignment="Center" FontWeight="Bold" Foreground="#38BDF8" Margin="0,0,12,0"/>
+                                <Button Content="👢 เตะออกจากเซิร์ฟเวอร์" Background="#7F1D1D" Foreground="#FCA5A5" Margin="0,0,6,0" Click="BtnKickPlayer_Click"/>
+                                <Button Content="💰 แจก 1,000,000 ทอง" Margin="0,0,6,0" Click="BtnAddGoldPlayer_Click"/>
+                                <Button Content="🌀 วาร์ปกลับเมืองเริ่มต้น" Margin="0,0,6,0" Click="BtnWarpPlayer_Click"/>
+                                <Button Content="⬆️ ปรับเป็นเลเวล 100" Margin="0,0,6,0" Click="BtnSetLevelPlayer_Click"/>
+                                <Button Content="🎁 แจกชุดอุปกรณ์เริ่มต้น" Margin="0,0,6,0" Click="BtnGiveStarterKit_Click"/>
+                                <Button Content="💬 ส่งข้อความกระซิบหาผู้เล่น" Margin="0,0,6,0" Click="BtnWhisperPlayer_Click"/>
+                            </WrapPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </TabItem>
+
+            <!-- แท็บ 2: คลังข้อมูลไอเทมและขุนพล -->
+            <!-- แท็บ 2: คลังข้อมูลไอเทม ขุนพล และไฟล์เกม (Game Data Explorer) -->
+            <TabItem Header="📦 คลังข้อมูลเกม (Item, NPC &amp; Data Files)">
+                <Border Background="#222630" Margin="0,4,0,0" BorderBrush="#333A48" BorderThickness="1" CornerRadius="0,6,6,6">
+                    <TabControl Background="#1E232E" BorderBrush="#333A48" Margin="8">
+
+                        <!-- 2.1 คลังไอเทม (Item Data) -->
+                        <TabItem Header="🎒 คลังข้อมูลไอเทม (Item Data)">
+                            <Border Background="#1E232E" Padding="10">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- แถบค้นหาและตัวกรองไอเทม -->
+                                    <Grid Grid.Row="0" Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="220"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="🔍 ค้นหาไอเทม (ชื่อ/รหัส):" Foreground="#CBD5E1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <TextBox x:Name="TxtSearchItem" Grid.Column="1" Height="28" TextChanged="TxtSearchItem_TextChanged"/>
+
+                                        <TextBlock Grid.Column="2" Text="ประเภท:" Foreground="#CBD5E1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,8,0"/>
+                                        <ComboBox x:Name="CmbItemCategory" Grid.Column="3" Height="28" SelectionChanged="CmbItemCategory_SelectionChanged" SelectedIndex="0">
+                                            <ComboBoxItem Content="ทั้งหมด (All Categories)"/>
+                                            <ComboBoxItem Content="⚔️ อาวุธ (Weapons)"/>
+                                            <ComboBoxItem Content="🛡️ ชุดเกราะ/เครื่องสวมใส่ (Armor)"/>
+                                            <ComboBoxItem Content="🧪 ยาและฟื้นฟู (Consumables)"/>
+                                            <ComboBoxItem Content="📜 ยันต์/สัตว์ขี่/เควสต์ (Special)"/>
+                                        </ComboBox>
+
+                                        <TextBlock x:Name="TxtItemCountDisplay" Grid.Column="4" Text="แสดง 0 รายการ" Foreground="#38BDF8" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                                        <Button Grid.Column="5" Content="🔄 รีเฟรชไอเทม" Click="BtnRefreshItems_Click"/>
+                                    </Grid>
+
+                                    <!-- ตารางข้อมูลไอเทม -->
+                                    <DataGrid x:Name="GridItems" Grid.Row="1" Background="#141720" Foreground="#FFFFFF" RowBackground="#1B202B" AlternatingRowBackground="#242B3A"
+                                              AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#333A48"
+                                              SelectionChanged="GridItems_SelectionChanged">
+                                        <DataGrid.Resources>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="Background" Value="#0F1218"/>
+                                                <Setter Property="Foreground" Value="#38BDF8"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                <Setter Property="Padding" Value="6,4"/>
+                                            </Style>
+                                        </DataGrid.Resources>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="รหัส" Binding="{Binding Id}" Width="65"/>
+                                            <DataGridTextColumn Header="ชื่อไอเทม" Binding="{Binding Name}" Width="200"/>
+                                            <DataGridTextColumn Header="ประเภท" Binding="{Binding KindStr}" Width="110"/>
+                                            <DataGridTextColumn Header="เลเวล" Binding="{Binding Level}" Width="55"/>
+                                            <DataGridTextColumn Header="โจมตี (ATK)" Binding="{Binding Atk}" Width="80"/>
+                                            <DataGridTextColumn Header="ป้องกัน (DEF)" Binding="{Binding Def}" Width="85"/>
+                                            <DataGridTextColumn Header="ปัญญา (INT)" Binding="{Binding Matk}" Width="80"/>
+                                            <DataGridTextColumn Header="จิต (MDEF)" Binding="{Binding Mdef}" Width="75"/>
+                                            <DataGridTextColumn Header="ความไว (AGI)" Binding="{Binding Agi}" Width="90"/>
+                                            <DataGridTextColumn Header="ฟื้น HP" Binding="{Binding Hp}" Width="65"/>
+                                            <DataGridTextColumn Header="ฟื้น SP" Binding="{Binding Sp}" Width="65"/>
+                                            <DataGridTextColumn Header="ราคาขาย" Binding="{Binding Price}" Width="80"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <!-- แถบเครื่องมือควบคุมไอเทม -->
+                                    <Border Grid.Row="2" Background="#161922" BorderBrush="#333A48" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,8,0,0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock x:Name="TxtSelectedItemInfo" Text="กรุณาเลือกไอเทมในตารางเพื่อดูรายละเอียดหรือส่งให้ผู้เล่น" Foreground="#CBD5E1" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                <Button Content="📋 คัดลอกคำสั่ง GM (/additem)" Margin="0,0,8,0" Click="BtnCopyItemGm_Click"/>
+                                                <Button Content="🎁 ส่งไอเทมให้ผู้เล่นที่เลือก" Background="#0284C7" Foreground="#FFFFFF" FontWeight="Bold" Click="BtnSendSelectedItem_Click"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </TabItem>
+
+                        <!-- 2.2 คลังขุนพลและมอนสเตอร์ (NPC & General Data) -->
+                        <TabItem Header="🐾 คลังข้อมูลขุนพลและมอนสเตอร์ (NPC Data)">
+                            <Border Background="#1E232E" Padding="10">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- แถบค้นหาและตัวกรองขุนพล -->
+                                    <Grid Grid.Row="0" Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="220"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="160"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="🔍 ค้นหาขุนพล/มอนสเตอร์:" Foreground="#CBD5E1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <TextBox x:Name="TxtSearchNpc" Grid.Column="1" Height="28" TextChanged="TxtSearchNpc_TextChanged"/>
+
+                                        <TextBlock Grid.Column="2" Text="ธาตุ:" Foreground="#CBD5E1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,8,0"/>
+                                        <ComboBox x:Name="CmbNpcElementFilter" Grid.Column="3" Height="28" SelectionChanged="CmbNpcElementFilter_SelectionChanged" SelectedIndex="0">
+                                            <ComboBoxItem Content="ทั้งหมด (All Elements)"/>
+                                            <ComboBoxItem Content="🌍 ธาตุดิน (Earth)"/>
+                                            <ComboBoxItem Content="💧 ธาตุน้ำ (Water)"/>
+                                            <ComboBoxItem Content="🔥 ธาตุไฟ (Fire)"/>
+                                            <ComboBoxItem Content="💨 ธาตุลม (Wind)"/>
+                                        </ComboBox>
+
+                                        <TextBlock x:Name="TxtNpcCountDisplay" Grid.Column="4" Text="แสดง 0 รายการ" Foreground="#34D399" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                                        <Button Grid.Column="5" Content="🔄 รีเฟรชขุนพล" Click="BtnRefreshNpcs_Click"/>
+                                    </Grid>
+
+                                    <!-- ตารางข้อมูลขุนพล -->
+                                    <DataGrid x:Name="GridNpcs" Grid.Row="1" Background="#141720" Foreground="#FFFFFF" RowBackground="#1B202B" AlternatingRowBackground="#242B3A"
+                                              AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#333A48"
+                                              SelectionChanged="GridNpcs_SelectionChanged">
+                                        <DataGrid.Resources>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="Background" Value="#0F1218"/>
+                                                <Setter Property="Foreground" Value="#38BDF8"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                <Setter Property="Padding" Value="6,4"/>
+                                            </Style>
+                                        </DataGrid.Resources>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="รหัส" Binding="{Binding Id}" Width="65"/>
+                                            <DataGridTextColumn Header="ชื่อขุนพล / มอนสเตอร์" Binding="{Binding Name}" Width="240"/>
+                                            <DataGridTextColumn Header="เลเวล" Binding="{Binding Level}" Width="55"/>
+                                            <DataGridTextColumn Header="ธาตุ" Binding="{Binding ElementStr}" Width="90"/>
+                                            <DataGridTextColumn Header="พลังชีวิต (HP)" Binding="{Binding Hp}" Width="90"/>
+                                            <DataGridTextColumn Header="มานา (SP)" Binding="{Binding Sp}" Width="80"/>
+                                            <DataGridTextColumn Header="โจมตี (ATK)" Binding="{Binding Atk}" Width="80"/>
+                                            <DataGridTextColumn Header="ป้องกัน (DEF)" Binding="{Binding Def}" Width="85"/>
+                                            <DataGridTextColumn Header="ปัญญา (INT)" Binding="{Binding Matk}" Width="80"/>
+                                            <DataGridTextColumn Header="ความไว (AGI)" Binding="{Binding Agi}" Width="90"/>
+                                            <DataGridTextColumn Header="สกิลประจำตัว" Binding="{Binding SkillsStr}" Width="140"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <!-- แถบเครื่องมือควบคุมขุนพล -->
+                                    <Border Grid.Row="2" Background="#161922" BorderBrush="#333A48" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,8,0,0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock x:Name="TxtSelectedNpcInfo" Text="กรุณาเลือกขุนพลในตารางเพื่อดูข้อมูลหรือมอบให้ผู้เล่น" Foreground="#CBD5E1" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                <Button Content="📋 คัดลอกคำสั่ง GM (/summon)" Margin="0,0,8,0" Click="BtnCopyNpcGm_Click"/>
+                                                <Button Content="🐾 มอบขุนพลให้ผู้เล่นที่เลือก" Background="#059669" Foreground="#FFFFFF" FontWeight="Bold" Click="BtnSendSelectedPet_Click"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </TabItem>
+
+                        <!-- 2.3 คลังชุดแฟชั่น & อวตาร (Fashion & Costumes) -->
+                        <TabItem Header="👗 คลังชุดแฟชั่น &amp; อวตาร (Fashion &amp; Costumes)">
+                            <Border Background="#1E232E" Padding="10">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- แถบค้นหาและตัวกรองแฟชั่น -->
+                                    <Grid Grid.Row="0" Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="220"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="180"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="🔍 ค้นหาชุดแฟชั่น:" Foreground="#CBD5E1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <TextBox x:Name="TxtSearchFashion" Grid.Column="1" Height="28" TextChanged="TxtSearchFashion_TextChanged"/>
+
+                                        <TextBlock Grid.Column="2" Text="หมวดหมู่:" Foreground="#CBD5E1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,8,0"/>
+                                        <ComboBox x:Name="CmbFashionCategory" Grid.Column="3" Height="28" SelectionChanged="CmbFashionCategory_SelectionChanged" SelectedIndex="0">
+                                            <ComboBoxItem Content="ทั้งหมด (All Fashions)"/>
+                                            <ComboBoxItem Content="👑 ชุดคลุมแฟชั่น (Robes/Suits)"/>
+                                            <ComboBoxItem Content="🧢 หมวกแฟชั่น (Hats/Hair)"/>
+                                            <ComboBoxItem Content="⚔️ อาวุธแฟชั่น (Weapons)"/>
+                                            <ComboBoxItem Content="🪽 ปีกและผ้าคลุม (Wings/Capes)"/>
+                                            <ComboBoxItem Content="🎉 ชุดเทศกาลพิเศษ (Festival)"/>
+                                        </ComboBox>
+
+                                        <TextBlock x:Name="TxtFashionCountDisplay" Grid.Column="4" Text="แสดง 0 รายการ" Foreground="#F472B6" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                                        <Button Grid.Column="5" Content="🔄 รีเฟรชแฟชั่น" Click="BtnRefreshFashion_Click"/>
+                                    </Grid>
+
+                                    <!-- ตารางข้อมูลแฟชั่น -->
+                                    <DataGrid x:Name="GridFashions" Grid.Row="1" Background="#141720" Foreground="#FFFFFF" RowBackground="#1B202B" AlternatingRowBackground="#242B3A"
+                                              AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#333A48"
+                                              SelectionChanged="GridFashions_SelectionChanged">
+                                        <DataGrid.Resources>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="Background" Value="#0F1218"/>
+                                                <Setter Property="Foreground" Value="#38BDF8"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                <Setter Property="Padding" Value="6,4"/>
+                                            </Style>
+                                        </DataGrid.Resources>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="รหัส" Binding="{Binding Id}" Width="65"/>
+                                            <DataGridTextColumn Header="ชื่อชุดแฟชั่น / อวตาร" Binding="{Binding Name}" Width="240"/>
+                                            <DataGridTextColumn Header="หมวดหมู่" Binding="{Binding Category}" Width="130"/>
+                                            <DataGridTextColumn Header="HP" Binding="{Binding BonusHp}" Width="55"/>
+                                            <DataGridTextColumn Header="SP" Binding="{Binding BonusSp}" Width="55"/>
+                                            <DataGridTextColumn Header="ATK" Binding="{Binding BonusAtk}" Width="55"/>
+                                            <DataGridTextColumn Header="DEF" Binding="{Binding BonusDef}" Width="55"/>
+                                            <DataGridTextColumn Header="INT" Binding="{Binding BonusMatk}" Width="55"/>
+                                            <DataGridTextColumn Header="AGI" Binding="{Binding BonusAgi}" Width="55"/>
+                                            <DataGridTextColumn Header="เอฟเฟกต์โบนัสเซ็ตแฟชั่น" Binding="{Binding SetBonusDesc}" Width="250"/>
+                                            <DataGridTextColumn Header="ราคา" Binding="{Binding Price}" Width="80"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <!-- แถบเครื่องมือควบคุมแฟชั่น -->
+                                    <Border Grid.Row="2" Background="#161922" BorderBrush="#333A48" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,8,0,0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock x:Name="TxtSelectedFashionInfo" Text="กรุณาเลือกชุดแฟชั่นในตารางเพื่อดูรายละเอียดหรือส่งให้ผู้เล่น" Foreground="#CBD5E1" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                <Button Content="📋 คัดลอกคำสั่ง GM (/additem)" Margin="0,0,8,0" Click="BtnCopyFashionGm_Click"/>
+                                                <Button Content="👗 มอบชุดแฟชั่นให้ผู้เล่นที่เลือก" Background="#EC4899" Foreground="#FFFFFF" FontWeight="Bold" Click="BtnSendSelectedFashion_Click"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </TabItem>
+
+                        <!-- 2.4 ไฟล์ข้อมูลเกมภาษาไทยทั้งหมด (308 Data Files) -->
+                        <TabItem Header="📁 ไฟล์ข้อมูลเกม 308 ไฟล์ (Game Files Explorer)">
+                            <Border Background="#1E232E" Padding="10">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- แถบค้นหาไฟล์ -->
+                                    <Grid Grid.Row="0" Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="260"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="🔍 ค้นหาชื่อไฟล์ข้อมูล:" Foreground="#CBD5E1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <TextBox x:Name="TxtSearchDataFile" Grid.Column="1" Height="28" TextChanged="TxtSearchDataFile_TextChanged"/>
+                                        <TextBlock x:Name="TxtFilesCountDisplay" Grid.Column="2" Text="โหลดแล้ว 308 ไฟล์ภาษาไทย" Foreground="#38BDF8" FontWeight="SemiBold" VerticalAlignment="Center" Margin="14,0,0,0"/>
+                                        <StackPanel Grid.Column="3" Orientation="Horizontal">
+                                            <Button Content="📂 เปิดโฟลเดอร์ DATA\Data" Margin="0,0,8,0" Click="BtnOpenDataFolder_Click"/>
+                                            <Button Content="📂 เปิดโฟลเดอร์ Eve" Click="BtnOpenEveFolder_Click"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- ตารางแสดงรายการไฟล์ 308 ไฟล์ -->
+                                    <DataGrid x:Name="GridDataFiles" Grid.Row="1" Background="#141720" Foreground="#FFFFFF" RowBackground="#1B202B" AlternatingRowBackground="#242B3A"
+                                              AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#333A48">
+                                        <DataGrid.Resources>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="Background" Value="#0F1218"/>
+                                                <Setter Property="Foreground" Value="#38BDF8"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                <Setter Property="Padding" Value="6,4"/>
+                                            </Style>
+                                        </DataGrid.Resources>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="ชื่อไฟล์ข้อมูล" Binding="{Binding FileName}" Width="250"/>
+                                            <DataGridTextColumn Header="ขนาดไฟล์" Binding="{Binding FileSizeStr}" Width="110"/>
+                                            <DataGridTextColumn Header="ประเภทข้อมูลเกม" Binding="{Binding FileType}" Width="200"/>
+                                            <DataGridTextColumn Header="โฟลเดอร์จัดเก็บ" Binding="{Binding Directory}" Width="160"/>
+                                            <DataGridTextColumn Header="สถานะระบบ" Binding="{Binding Status}" Width="120"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <TextBlock Grid.Row="2" Text="💡 ข้อมูลเกมทั้งหมดได้รับการถอดรหัสเป็นภาษาไทย (Windows-874 / TIS-620) พร้อมเชื่อมต่อเข้าสู่เซิร์ฟเวอร์เรียบร้อยแล้ว" FontSize="11.5" Foreground="#94A3B8" Margin="0,8,0,0"/>
+                                </Grid>
+                            </Border>
+                        </TabItem>
+
+                    </TabControl>
+                </Border>
+            </TabItem>
+
+            <!-- แท็บ 3: คำสั่ง GM & ประกาศทั้งเซิร์ฟเวอร์ -->
+            <TabItem Header="⚡ คำสั่ง GM &amp; ประกาศ">
+                <Border Background="#222630" Margin="0,4,0,0" Padding="16" BorderBrush="#333A48" BorderThickness="1" CornerRadius="0,6,6,6">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- ช่องส่งประกาศวิ่ง -->
+                        <GroupBox Header="📢 ส่งประกาศวิ่งทั้งเซิร์ฟเวอร์ (Marquee Broadcast)" Margin="0,0,0,14">
+                            <Border Padding="10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="TxtBroadcastMsg" Text="ยินดีต้อนรับสู่เซิร์ฟเวอร์ TS Dark World ภาษาไทย!" Height="34" VerticalContentAlignment="Center" Margin="0,0,10,0"/>
+                                    <Button Grid.Column="1" Content="📢 ส่งประกาศทันที" Background="#0284C7" Foreground="#FFFFFF" FontWeight="Bold" Padding="16,7" Click="BtnSendBroadcast_Click"/>
+                                </Grid>
+                            </Border>
+                        </GroupBox>
+
+                        <!-- คำสั่งรวมผู้เล่นทั้งเซิร์ฟเวอร์ -->
+                        <GroupBox Grid.Row="1" Header="🌐 คำสั่งส่วนรวมทั้งเซิร์ฟเวอร์ (Global Actions)" Margin="0,0,0,14">
+                            <Border Padding="10">
+                                <WrapPanel>
+                                    <Button Content="💸 แจกเงิน 500,000 ทองทุกคน" Background="#D97706" Foreground="#FFFFFF" FontWeight="SemiBold" Margin="0,0,10,10" Click="BtnGiveGoldAll_Click"/>
+                                    <Button Content="🌀 ดึงทุกคนมาเมืองเริ่มต้น (10801)" Background="#0284C7" Foreground="#FFFFFF" FontWeight="SemiBold" Margin="0,0,10,10" Click="BtnWarpAllToStart_Click"/>
+                                    <Button Content="⚡ ฟื้นฟูเลือดและมานาเต็มทุกคน (Heal All)" Background="#059669" Foreground="#FFFFFF" FontWeight="SemiBold" Margin="0,0,10,10" Click="BtnHealAll_Click"/>
+                                    <Button Content="⚠️ แจ้งเตือนปิดปรับปรุงเซิร์ฟเวอร์ (นับถอยหลัง 60 วิ)" Background="#DC2626" Foreground="#FFFFFF" FontWeight="SemiBold" Margin="0,0,10,10" Click="BtnMaintenanceCountdown_Click"/>
+                                </WrapPanel>
+                            </Border>
+                        </GroupBox>
+
+                        <!-- กล่องพิมพ์คำสั่ง GM -->
+                        <GroupBox Grid.Row="2" Header="⌨️ กล่องพิมพ์คำสั่ง GM โดยตรง (GM Console)">
+                            <Border Padding="10">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="TxtGmCommand" Text="/additem 10001 50" Height="34" VerticalContentAlignment="Center" Margin="0,0,10,0"/>
+                                        <Button Grid.Column="1" Content="ดำเนินการคำสั่ง GM" Background="#059669" Foreground="#FFFFFF" FontWeight="Bold" Padding="16,7" Click="BtnExecuteGmCommand_Click"/>
+                                    </Grid>
+                                    <TextBlock Grid.Row="1" Text="ตัวอย่างคำสั่ง: /additem [รหัสไอเทม] [จำนวน] | /setgold [จำนวนทอง] | /tp [รหัสแมพ] [x] [y] | /level [เลเวล] | /info | /bc [ข้อความ]" Foreground="#94A3B8" FontSize="12" Margin="0,8,0,0"/>
+                                </Grid>
+                            </Border>
+                        </GroupBox>
+                    </Grid>
+                </Border>
+            </TabItem>
+
+            <!-- แท็บ 4: จัดการบัญชีผู้เล่น -->
+            <TabItem Header="👤 จัดการบัญชีผู้เล่น">
+                <Border Background="#222630" Margin="0,4,0,0" Padding="16" BorderBrush="#333A48" BorderThickness="1" CornerRadius="0,6,6,6">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="400"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- แบบฟอร์มสร้างบัญชี -->
+                        <GroupBox Header="➕ สร้างบัญชีใหม่ / แก้ไขรหัสผ่าน" Margin="0,0,14,0">
+                            <Border Padding="12">
+                                <StackPanel>
+                                    <TextBlock Text="ชื่อบัญชี (Username):" Foreground="#CBD5E1" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                    <TextBox x:Name="TxtNewAccount" Text="player1" Height="30" Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="รหัสผ่าน (Password):" Foreground="#CBD5E1" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                    <TextBox x:Name="TxtNewPassword" Height="30" Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="ระดับสิทธิ์ (GM Level):" Foreground="#CBD5E1" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="CmbNewGmLevel" SelectedIndex="0" Margin="0,0,0,16">
+                                        <ComboBoxItem Content="0 - ผู้เล่นทั่วไป (Regular Player)"/>
+                                        <ComboBoxItem Content="5 - ผู้ดูแลระบบ (Game Master)"/>
+                                        <ComboBoxItem Content="10 - ผู้ดูแลสูงสุด (Super Admin)"/>
+                                    </ComboBox>
+
+                                    <Button Content="💾 บันทึก / สร้างบัญชีผู้ใช้" Background="#059669" Foreground="#FFFFFF" FontWeight="Bold" Height="34" Click="BtnCreateAccount_Click"/>
+                                </StackPanel>
+                            </Border>
+                        </GroupBox>
+
+                        <!-- เครื่องมือช่วยเหลือตัวละคร -->
+                        <GroupBox Grid.Column="1" Header="🛠️ เครื่องมือช่วยเหลือและแก้ไขตัวละคร">
+                            <Border Padding="12">
+                                <StackPanel>
+                                    <TextBlock Text="แก้ปัญหาตัวละครติดแมพ (Unstuck Player):" FontWeight="Bold" Foreground="#F8FAFC" FontSize="14" Margin="0,0,0,6"/>
+                                    <TextBlock Text="หากผู้เล่นติดบั๊กในแผนที่หรือเข้าเกมไม่ได้ ให้ระบุรหัสตัวละครเพื่อรีเซ็ตพิกัดกลับสู่เมืองเริ่มต้น" Foreground="#94A3B8" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                        <TextBox x:Name="TxtUnstuckCharId" Text="1" Width="120" Height="30" Margin="0,0,10,0"/>
+                                        <Button Content="🌀 รีเซ็ตพิกัดตัวละครกลับเมืองเริ่มต้น" Click="BtnUnstuckChar_Click"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </GroupBox>
+                    </Grid>
+                </Border>
+            </TabItem>
+
+            <!-- แท็บ 5: บันทึกการทำงานของเซิร์ฟเวอร์ -->
+            <TabItem Header="📜 บันทึกระบบ (Logs)">
+                <Border Background="#222630" Margin="0,4,0,0" BorderBrush="#333A48" BorderThickness="1" CornerRadius="0,6,6,6">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- แถบควบคุม Log -->
+                        <Border Grid.Row="0" Background="#1B1E26" BorderBrush="#333A48" BorderThickness="0,0,0,1" Padding="12,8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="ระดับการแสดงผล:" Foreground="#CBD5E1" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <ComboBox x:Name="CmbLogLevel" SelectedIndex="0" Width="130" Margin="0,0,12,0">
+                                        <ComboBoxItem Content="ทั้งหมด (All)"/>
+                                        <ComboBoxItem Content="ข้อมูลทั่วไป (Info)"/>
+                                        <ComboBoxItem Content="คำสั่ง GM"/>
+                                        <ComboBoxItem Content="แพ็กเก็ต (Packets)"/>
+                                        <ComboBoxItem Content="ข้อผิดพลาด (Error)"/>
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                    <CheckBox x:Name="ChkAutoScroll" Content="เลื่อนหน้าจออัตโนมัติ" IsChecked="True" Foreground="#CBD5E1" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                    <Button Content="💾 ส่งออกไฟล์บันทึก (.txt)" Margin="0,0,6,0" Click="BtnExportLogs_Click"/>
+                                    <Button Content="🧹 ล้างหน้าจอบันทึก" Click="BtnClearLogs_Click"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <TextBox x:Name="TxtLogs" Grid.Row="1" Background="#0F1117" Foreground="#34D399" FontFamily="Consolas, Cascadia Code, Tahoma"
+                                 FontSize="12.5" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Padding="10" Margin="0"/>
+                    </Grid>
+                </Border>
+            </TabItem>
+
+            <!-- แท็บ 6: ตั้งค่าเซิร์ฟเวอร์ & Config.JSON -->
+            <TabItem Header="⚙️ ตั้งค่าเซิร์ฟเวอร์ &amp; Config.JSON">
+                <Border Background="#222630" Margin="0,4,0,0" Padding="14" BorderBrush="#333A48" BorderThickness="1" CornerRadius="0,6,6,6">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.1*"/>
+                            <ColumnDefinition Width="0.9*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- ฝั่งซ้าย: ฟอร์มกรอกและปรับแต่ง Config -->
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,0,10,0">
+                            <StackPanel>
+                                <!-- โหมดไอพีและการเชื่อมต่อ -->
+                                <GroupBox Header="🌐 โหมดไอพีเซิร์ฟเวอร์ (Localhost 127.0.0.1 / VPS Server)" Margin="0,0,0,10">
+                                    <Border Padding="10">
+                                        <StackPanel>
+                                            <RadioButton x:Name="RbLocalMode" Content="🏠 โหมดเล่นคนเดียวในเครื่อง (Localhost: 127.0.0.1)" IsChecked="True" Foreground="#34D399" FontWeight="SemiBold" Margin="0,0,0,6" Checked="RbIpMode_Changed"/>
+                                            <RadioButton x:Name="RbVpsMode" Content="☁️ โหมดออนไลน์บน VPS / Dedicated Server" Foreground="#38BDF8" FontWeight="SemiBold" Margin="0,0,0,10" Checked="RbIpMode_Changed"/>
+
+                                            <TextBlock Text="ไอพีเซิร์ฟเวอร์ VPS (Public IP / Domain):" Foreground="#CBD5E1" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                            <Grid Margin="0,0,0,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBox x:Name="CfgVpsIp" Text="127.0.0.1" Height="28" VerticalContentAlignment="Center" Margin="0,0,8,0"/>
+                                                <Button Grid.Column="1" Content="🌐 ตรวจสอบไอพี" Padding="8,3" Click="BtnDetectPublicIp_Click"/>
+                                            </Grid>
+
+                                            <Grid Margin="0,0,0,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Margin="0,0,4,0">
+                                                    <TextBlock Text="พอร์ตเกม TCP:" Foreground="#CBD5E1" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                                    <TextBox x:Name="CfgPort" Text="6613" Height="28"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Margin="4,0,0,0">
+                                                    <TextBlock Text="Bind IP:" Foreground="#CBD5E1" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                                    <TextBox x:Name="CfgHost" Text="127.0.0.1" Height="28"/>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <Button Content="📋 สร้างไฟล์เชื่อมต่อสำหรับผู้เล่น (Client Config)" Background="#0284C7" Foreground="#FFFFFF" FontWeight="Bold" Height="30" Click="BtnGenerateClientConfig_Click"/>
+                                        </StackPanel>
+                                    </Border>
+                                </GroupBox>
+
+                                <!-- ฐานข้อมูล MySQL (XAMPP) -->
+                                <GroupBox Header="🗄️ ฐานข้อมูล MySQL (XAMPP พอร์ต 3306)" Margin="0,0,0,10">
+                                    <Border Padding="10">
+                                        <StackPanel>
+                                            <TextBlock Text="สตริงเชื่อมต่อฐานข้อมูล MySQL (Connection String):" Foreground="#CBD5E1" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                            <TextBox x:Name="CfgDbConn" Text="Server=localhost;Port=3306;Database=tsm_dodo;Uid=root;Pwd=;" Height="28" Margin="0,0,0,8"/>
+
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                                <Button Content="🔌 ทดสอบเชื่อมต่อ MySQL" Margin="0,0,6,0" Click="BtnTestDb_Click"/>
+                                                <Button Content="🛠️ สร้างตาราง SQL" Background="#059669" Foreground="#FFFFFF" FontWeight="Bold" Margin="0,0,6,0" Click="BtnInitDb_Click"/>
+                                                <Button Content="💾 แบ็กอัป SQL" Background="#D97706" Foreground="#FFFFFF" FontWeight="Bold" Margin="0,0,6,0" Click="BtnBackupDb_Click"/>
+                                                <Button Content="📂 โฟลเดอร์ Backup" Click="BtnOpenBackupDir_Click"/>
+                                            </StackPanel>
+
+                                            <Border Background="#1B1E26" BorderBrush="#333A48" BorderThickness="1" CornerRadius="4" Padding="8,5">
+                                                <CheckBox x:Name="ChkAutoBackup" Content="⚡ สำรองข้อมูล SQL อัตโนมัติลง SQL\Backups เมื่อแก้ไข" IsChecked="True" Foreground="#34D399" FontWeight="SemiBold"/>
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+                                </GroupBox>
+
+                                <!-- อัตราคูณและที่อยู่ข้อมูลเกม -->
+                                <GroupBox Header="🎮 อัตราคูณเซิร์ฟเวอร์ &amp; โฟลเดอร์ข้อมูล" Margin="0,0,0,10">
+                                    <Border Padding="10">
+                                        <StackPanel>
+                                            <Grid Margin="0,0,0,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Margin="0,0,3,0">
+                                                    <TextBlock Text="EXP:" Foreground="#CBD5E1" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                                    <TextBox x:Name="CfgExpRate" Text="1" Height="28"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Margin="3,0,3,0">
+                                                    <TextBlock Text="ดรอป:" Foreground="#CBD5E1" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                                    <TextBox x:Name="CfgDropRate" Text="1" Height="28"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2" Margin="3,0,3,0">
+                                                    <TextBlock Text="เงินทอง:" Foreground="#CBD5E1" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                                    <TextBox x:Name="CfgGoldRate" Text="1" Height="28"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="3" Margin="3,0,0,0">
+                                                    <TextBlock Text="EXP ขุนพล:" Foreground="#CBD5E1" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                                    <TextBox x:Name="CfgPetExpRate" Text="1" Height="28"/>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <TextBlock Text="โฟลเดอร์เก็บข้อมูลเกมภาษาไทย (Data Path):" Foreground="#CBD5E1" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                            <TextBox x:Name="CfgDataPath" Text="DATA\Data" Height="28" Margin="0,0,0,8"/>
+
+                                            <Button Content="💾 บันทึกฟอร์มลง Config.JSON และปรับใช้ทันที" Background="#0284C7" Foreground="#FFFFFF" FontWeight="Bold" Height="32" Click="BtnSaveConfig_Click"/>
+                                        </StackPanel>
+                                    </Border>
+                                </GroupBox>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <!-- ฝั่งขวา: โปรแกรมแก้ไขไฟล์ Config.JSON โดยตรง (Live Visual Code Editor) -->
+                        <GroupBox Grid.Column="1" Header="📄 ปรับแต่งไฟล์ Config.JSON โดยตรง (Live Editor)" Margin="0,0,0,0">
+                            <Grid Margin="6">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- แถบเครื่องมือจัดการ JSON -->
+                                <Border Grid.Row="0" Background="#16181E" BorderBrush="#333A48" BorderThickness="1" CornerRadius="4" Padding="6" Margin="0,0,0,6">
+                                    <WrapPanel>
+                                        <Button Content="🔄 โหลดจากไฟล์" Margin="0,0,6,0" Click="BtnReloadConfig_Click"/>
+                                        <Button Content="💾 บันทึกไฟล์ JSON" Background="#059669" Foreground="#FFFFFF" FontWeight="Bold" Margin="0,0,6,0" Click="BtnSaveJsonEditor_Click"/>
+                                        <Button Content="🔄 คืนค่าเริ่มต้น" Margin="0,0,6,0" Click="BtnResetDefaultConfig_Click"/>
+                                        <Button Content="📂 เปิดโฟลเดอร์" Click="BtnOpenConfigDir_Click"/>
+                                    </WrapPanel>
+                                </Border>
+
+                                <!-- กล่องข้อความโค้ด JSON -->
+                                <TextBox x:Name="TxtConfigJson" Grid.Row="1" Background="#0F1117" Foreground="#38BDF8"
+                                         FontFamily="Consolas, Cascadia Code, Courier New" FontSize="12.5"
+                                         AcceptsReturn="True" AcceptsTab="True" TextWrapping="NoWrap"
+                                         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Padding="10"/>
+
+                                <!-- สถานะที่อยู่ไฟล์ Config -->
+                                <TextBlock x:Name="TxtConfigPathDisplay" Grid.Row="2" Text="📁 ตำแหน่งไฟล์: DATA\Config.JSON" FontSize="11.5" Foreground="#94A3B8" Margin="4,6,0,0"/>
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                </Border>
+            </TabItem>
+        </TabControl>
+
+        <!-- 4. แถบสถานะด้านล่าง -->
+        <Border Grid.Row="3" Background="#13151A" BorderBrush="#333A48" BorderThickness="0,1,0,0" Padding="16,8">
+            <Grid>
+                <TextBlock x:Name="TxtFooterStatus" Text="โปรแกรมจำลองเซิร์ฟเวอร์ TS Dark World • พร้อมให้บริการ" FontSize="12.5" Foreground="#94A3B8"/>
+                <TextBlock Text="TS Dark World • C# 13 • .NET 9.0 Windows x64" FontSize="12.5" Foreground="#94A3B8" HorizontalAlignment="Right"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

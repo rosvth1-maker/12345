@@ -1,0 +1,10 @@
+namespace TsmServer.Domain.Enums;
+
+public enum Element
+{
+    None = 0,
+    Earth = 1,
+    Water = 2,
+    Fire = 3,
+    Wind = 4
+}

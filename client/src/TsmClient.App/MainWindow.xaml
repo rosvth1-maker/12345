@@ -1,0 +1,248 @@
+<Window x:Class="TsmClient.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:rendering="clr-namespace:TsmClient.Rendering;assembly=TsmClient.Rendering"
+        Title="TS Dark World — Windows Client 0.8.0-test.1" Width="1180" Height="760"
+        MinWidth="960" MinHeight="640" WindowStartupLocation="CenterScreen"
+        Background="#0D171D" Foreground="White" FontFamily="Leelawadee UI">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="76" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="34" />
+    </Grid.RowDefinitions>
+
+    <Border Grid.Row="0" Background="#142731" BorderBrush="#F0B429" BorderThickness="0,0,0,2">
+      <Grid Margin="22,10">
+        <StackPanel>
+          <TextBlock Text="TS DARK WORLD" FontSize="27" FontWeight="Bold" Foreground="#F0B429" />
+          <TextBlock Text="ตัวเกม Windows ภาษาไทย — Local Test 0.8.0-test.1 • Protocol 258" Foreground="#B8CBD4" />
+        </StackPanel>
+        <TextBlock x:Name="HeaderStatus" HorizontalAlignment="Right" VerticalAlignment="Center"
+                   Text="● ยังไม่เชื่อมต่อ" Foreground="#F26B6B" FontSize="15" />
+      </Grid>
+    </Border>
+
+    <TabControl Grid.Row="1" x:Name="MainTabs" Margin="14" Background="#101E25" Foreground="White">
+      <TabItem Header="  เชื่อมต่อและเข้าสู่ระบบ  ">
+        <Grid Margin="24">
+          <Grid.ColumnDefinitions><ColumnDefinition Width="390"/><ColumnDefinition Width="24"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+          <Border Background="{StaticResource PanelBrush}" Padding="22" CornerRadius="8">
+            <StackPanel>
+              <TextBlock Text="การเชื่อมต่อเซิร์ฟเวอร์" FontSize="21" FontWeight="SemiBold" Foreground="#F0B429" Margin="4,0,4,14" />
+              <TextBlock Text="IP หรือ Host" Margin="4,5,4,0"/><TextBox x:Name="HostBox" Text="127.0.0.1" />
+              <TextBlock Text="พอร์ต TCP" Margin="4,5,4,0"/><TextBox x:Name="PortBox" Text="6613" />
+              <TextBlock Text="เวอร์ชัน Client" Margin="4,5,4,0"/><TextBox x:Name="VersionBox" Text="258" />
+              <WrapPanel Margin="0,10,0,12">
+                <Button x:Name="TestButton" Content="ทดสอบเชื่อมต่อ" Click="TestConnection_Click" />
+                <Button x:Name="DisconnectButton" Content="ตัดการเชื่อมต่อ" Click="Disconnect_Click" Background="#607D8B" Foreground="White" />
+              </WrapPanel>
+              <Separator Background="#46616F" Margin="4,4,4,12" />
+              <TextBlock Text="บัญชีผู้เล่น" Margin="4,5,4,0"/><TextBox x:Name="AccountBox" MaxLength="20" />
+              <TextBlock Text="รหัสผ่าน" Margin="4,5,4,0"/><PasswordBox x:Name="PasswordInput" MaxLength="20" />
+              <Button x:Name="LoginButton" Content="เข้าสู่โลก TS Dark World" Click="Login_Click" Margin="4,18,4,4" IsEnabled="False" />
+              <TextBlock Text="หมายเหตุ: เซิร์ฟเวอร์ปัจจุบันสร้างบัญชีให้อัตโนมัติเมื่อเข้าสู่ระบบครั้งแรก"
+                         Foreground="#9FB5BF" TextWrapping="Wrap" Margin="4,12" />
+            </StackPanel>
+          </Border>
+          <Border Grid.Column="2" Background="{StaticResource PanelBrush}" Padding="18" CornerRadius="8">
+            <Grid>
+              <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+              <TextBlock Text="บันทึกการทำงาน" FontSize="19" FontWeight="SemiBold" Foreground="#F0B429" Margin="4,0,4,10" />
+              <ListBox Grid.Row="1" x:Name="LogList" Background="#0B151A" Foreground="#CFE0E7" BorderThickness="0" FontFamily="Consolas" />
+            </Grid>
+          </Border>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="  ตัวละคร  ">
+        <Grid Margin="24">
+          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="24"/><ColumnDefinition Width="380"/></Grid.ColumnDefinitions>
+          <Border Background="{StaticResource PanelBrush}" Padding="20" CornerRadius="8">
+            <Grid>
+              <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+              <TextBlock Text="รายชื่อตัวละคร" FontSize="21" FontWeight="SemiBold" Foreground="#F0B429" Margin="0,0,0,12" />
+              <ListBox Grid.Row="1" x:Name="CharacterListBox" Background="#0B151A" Foreground="White" BorderThickness="0"
+                       DisplayMemberPath="Name" FontSize="16" Padding="8" />
+              <Button Grid.Row="2" x:Name="SelectCharacterButton" Content="เลือกตัวละครและเข้าเกม"
+                      Click="SelectCharacter_Click" IsEnabled="False" Margin="0,14,0,0" />
+            </Grid>
+          </Border>
+          <Border Grid.Column="2" Background="{StaticResource PanelBrush}" Padding="20" CornerRadius="8">
+            <StackPanel>
+              <TextBlock Text="สร้างตัวละครใหม่" FontSize="21" FontWeight="SemiBold" Foreground="#F0B429" Margin="0,0,0,12" />
+              <TextBlock Text="ชื่อ (สูงสุด 16 ไบต์ Windows-874)"/><TextBox x:Name="CreateNameBox" MaxLength="16" />
+              <TextBlock Text="เพศ: 0 หรือ 1"/><ComboBox x:Name="GenderBox" SelectedIndex="1" Margin="4" Padding="8"><ComboBoxItem Content="0"/><ComboBoxItem Content="1"/></ComboBox>
+              <TextBlock Text="ธาตุ: 0–4"/><ComboBox x:Name="ElementBox" SelectedIndex="0" Margin="4" Padding="8"><ComboBoxItem Content="0"/><ComboBoxItem Content="1"/><ComboBoxItem Content="2"/><ComboBoxItem Content="3"/><ComboBoxItem Content="4"/></ComboBox>
+              <TextBlock Text="ทรงผม: 0–9"/><TextBox x:Name="HairBox" Text="1" />
+              <TextBlock Text="สีผม: 0–9"/><TextBox x:Name="HairColorBox" Text="1" />
+              <TextBlock Text="สีผิว: 0–9"/><TextBox x:Name="SkinColorBox" Text="1" />
+              <Button x:Name="CreateCharacterButton" Content="สร้างตัวละคร" Click="CreateCharacter_Click" Margin="4,18,4,4" IsEnabled="False" />
+              <TextBlock x:Name="CharacterFormStatus" Foreground="#B8CBD4" TextWrapping="Wrap" Margin="4,10" />
+            </StackPanel>
+          </Border>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="  แผนที่และการเดิน  ">
+        <Grid Margin="18">
+          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="260"/></Grid.ColumnDefinitions>
+          <Border BorderBrush="#46616F" BorderThickness="1" CornerRadius="5" ClipToBounds="True">
+            <rendering:GameSurface x:Name="GameView" />
+          </Border>
+          <Border Grid.Column="1" Background="{StaticResource PanelBrush}" Padding="16" Margin="14,0,0,0" CornerRadius="8">
+            <StackPanel>
+              <TextBlock Text="ข้อมูลตัวละคร" FontSize="18" FontWeight="SemiBold" Foreground="#F0B429" />
+              <TextBlock x:Name="CharacterInfo" Text="ยังไม่ได้เข้าสู่ระบบ" TextWrapping="Wrap" Margin="0,14" />
+              <Separator Background="#46616F" />
+              <TextBlock x:Name="SceneInfo" Text="ยังไม่ได้รับข้อมูล Scene" TextWrapping="Wrap" Foreground="#B8CBD4" Margin="0,14" />
+              <TextBlock Text="NPC และภารกิจ" FontWeight="SemiBold" Foreground="#F0B429" />
+              <ListBox x:Name="NpcListBox" Height="82" DisplayMemberPath="Name" SelectionChanged="NpcList_SelectionChanged" />
+              <Button x:Name="TalkNpcButton" Content="สนทนากับ NPC" Click="TalkNpc_Click" IsEnabled="False" />
+              <TextBlock x:Name="NpcDialogText" TextWrapping="Wrap" Foreground="#D8E9EF" Margin="4,8" />
+              <WrapPanel>
+                <Button x:Name="AcceptQuestButton" Content="รับภารกิจ" Click="AcceptQuest_Click" IsEnabled="False" />
+                <Button x:Name="CompleteQuestButton" Content="ส่งภารกิจ" Click="CompleteQuest_Click" IsEnabled="False" />
+              </WrapPanel>
+              <ListBox x:Name="QuestListBox" Height="72" DisplayMemberPath="Title" />
+              <TextBlock Text="ทดสอบวาร์ป" FontWeight="SemiBold" Foreground="#F0B429" Margin="0,8,0,4" />
+              <TextBox x:Name="WarpMapBox" Text="10802" ToolTip="Map ID" />
+              <WrapPanel>
+                <TextBox x:Name="WarpXBox" Text="300" Width="95" ToolTip="X" />
+                <TextBox x:Name="WarpYBox" Text="400" Width="95" ToolTip="Y" />
+              </WrapPanel>
+              <Button x:Name="WarpButton" Content="วาร์ปไปแผนที่" Click="Warp_Click" IsEnabled="False" Margin="4,10" />
+              <TextBlock Text="ขอบเขตทดสอบ 1600 × 1200; จุดเหลืองคือตัวเรา จุดฟ้าคือผู้เล่นอื่น"
+                         TextWrapping="Wrap" Foreground="#8FA7B2" Margin="0,8" />
+            </StackPanel>
+          </Border>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="  ระบบต่อสู้  ">
+        <Grid Margin="24">
+          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="24"/><ColumnDefinition Width="360"/></Grid.ColumnDefinitions>
+          <Border Background="{StaticResource PanelBrush}" Padding="24" CornerRadius="8">
+            <Grid>
+              <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+              <TextBlock Text="สนามต่อสู้" FontSize="22" FontWeight="SemiBold" Foreground="#F0B429"/>
+              <Grid Grid.Row="1" Margin="0,24">
+                <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+                <Border Background="#173640" Margin="8" Padding="24" CornerRadius="10">
+                  <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="ผู้เล่น" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock x:Name="BattlePlayerText" Text="ยังไม่เริ่มต่อสู้" TextAlignment="Center" Margin="0,15"/>
+                    <TextBlock x:Name="CompanionText" Text="ขุนพลร่วมต่อสู้: —" Foreground="#90CAF9"/>
+                  </StackPanel>
+                </Border>
+                <Border Grid.Column="1" Background="#402126" Margin="8" Padding="24" CornerRadius="10">
+                  <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="ศัตรู" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock x:Name="BattleEnemyText" Text="ยังไม่มีศัตรู" TextAlignment="Center" Margin="0,15"/>
+                    <ProgressBar x:Name="EnemyHpBar" Minimum="0" Maximum="120" Value="0" Height="18" Width="220"/>
+                  </StackPanel>
+                </Border>
+              </Grid>
+              <WrapPanel Grid.Row="2" HorizontalAlignment="Center">
+                <Button x:Name="StartBattleButton" Content="เริ่มต่อสู้" Click="StartBattle_Click" IsEnabled="False"/>
+                <Button x:Name="AttackButton" Content="โจมตี" Click="Attack_Click" IsEnabled="False"/>
+                <Button x:Name="SkillButton" Content="ใช้สกิล" Click="Skill_Click" IsEnabled="False"/>
+                <Button x:Name="ItemButton" Content="ใช้ไอเทม" Click="BattleItem_Click" IsEnabled="False"/>
+                <Button x:Name="GuardButton" Content="ป้องกัน" Click="Guard_Click" IsEnabled="False"/>
+                <Button x:Name="EscapeButton" Content="หนี" Click="Escape_Click" IsEnabled="False"/>
+              </WrapPanel>
+            </Grid>
+          </Border>
+          <Border Grid.Column="2" Background="{StaticResource PanelBrush}" Padding="20" CornerRadius="8">
+            <StackPanel>
+              <TextBlock Text="ผลการต่อสู้" FontSize="20" FontWeight="SemiBold" Foreground="#F0B429"/>
+              <TextBlock x:Name="BattleResultText" Text="พร้อมเริ่มต่อสู้กับ NPC ทดสอบ" TextWrapping="Wrap" Margin="0,16"/>
+              <Separator Background="#46616F"/>
+              <TextBlock Text="คำสั่งที่รองรับ: โจมตี, สกิล, ไอเทม, ป้องกัน และหนี" TextWrapping="Wrap" Foreground="#B8CBD4" Margin="0,14"/>
+            </StackPanel>
+          </Border>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="  ระบบเกมหลัก  ">
+        <Grid Margin="18">
+          <Grid.ColumnDefinitions><ColumnDefinition Width="360"/><ColumnDefinition Width="14"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+          <Border Background="{StaticResource PanelBrush}" Padding="16" CornerRadius="8">
+            <StackPanel>
+              <TextBlock Text="กระเป๋าและอุปกรณ์" FontSize="20" FontWeight="SemiBold" Foreground="#F0B429"/>
+              <ListBox x:Name="InventoryListBox" Height="240" DisplayMemberPath="Display" Margin="0,10"/>
+              <WrapPanel>
+                <Button Content="ใช้" Click="UseItem_Click"/><Button Content="สวม" Click="EquipItem_Click"/>
+                <Button Content="ถอด" Click="UnequipItem_Click"/><Button Content="ทิ้ง" Click="DiscardItem_Click"/>
+              </WrapPanel>
+              <TextBlock Text="แชต" FontWeight="SemiBold" Foreground="#F0B429" Margin="0,14,0,2"/>
+              <TextBox x:Name="ChatInput" Text="สวัสดี TS Dark World"/>
+              <Button Content="ส่งแชตแผนที่" Click="SendChat_Click"/>
+              <TextBlock x:Name="ChatOutput" TextWrapping="Wrap" Margin="4" Foreground="#B8CBD4"/>
+            </StackPanel>
+          </Border>
+          <Border Grid.Column="2" Background="{StaticResource PanelBrush}" Padding="16" CornerRadius="8">
+            <Grid>
+              <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+              <TextBlock Text="ระบบเกมระยะที่ 7" FontSize="20" FontWeight="SemiBold" Foreground="#F0B429"/>
+              <WrapPanel Grid.Row="1" Margin="0,12">
+                <Button Content="อัปเกรดสกิล 101" Click="UpgradeSkill_Click"/><Button Content="ดูขุนพล" Click="PetRoster_Click"/>
+                <Button Content="ส่งขุนพลออกรบ" Click="DeployPet_Click"/><Button Content="เชิญปาร์ตี้ #1" Click="InviteTeam_Click"/>
+                <Button Content="ซื้อซาลาเปา" Click="BuyItem_Click"/><Button Content="ฝากเงิน 100" Click="Deposit_Click"/>
+                <Button Content="ถอนเงิน 50" Click="Withdraw_Click"/><Button Content="เพิ่มเพื่อน #1" Click="AddFriend_Click"/>
+                <Button Content="ส่งจดหมาย" Click="SendMail_Click"/><Button Content="ยืนยันการค้า" Click="Trade_Click"/>
+                <Button Content="เข้ากิลด์" Click="Guild_Click"/><Button Content="ดูอันดับ" Click="Leaderboard_Click"/>
+              </WrapPanel>
+              <ListBox Grid.Row="2" x:Name="CoreSystemList" DisplayMemberPath="Message"/>
+            </Grid>
+          </Border>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="  ข้อมูลทรัพยากรเกม  ">
+        <Grid Margin="24">
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+          <TextBlock Text="ตรวจข้อมูลจากตัวเกม TS ภาษาไทยเดิม" FontSize="21" FontWeight="SemiBold" Foreground="#F0B429" />
+          <DockPanel Grid.Row="1" Margin="0,14">
+            <Button x:Name="ScanAssetsButton" DockPanel.Dock="Right" Content="สร้าง Catalog + SHA-256" Click="ScanAssets_Click" />
+            <TextBox x:Name="AssetPathBox" Text="C:\Users\Administrator\Documents\Codex\ตัวเกมTS ไทย 26-8-2569\files" />
+          </DockPanel>
+          <TextBox Grid.Row="2" x:Name="AssetReportBox" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap"
+                   VerticalScrollBarVisibility="Auto" FontFamily="Consolas" />
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="  ตั้งค่าและอัปเดต  ">
+        <Grid Margin="24">
+          <Grid.ColumnDefinitions><ColumnDefinition Width="400"/><ColumnDefinition Width="24"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+          <Border Background="{StaticResource PanelBrush}" Padding="20" CornerRadius="8">
+            <StackPanel>
+              <TextBlock Text="โปรไฟล์และการแสดงผล" FontSize="21" FontWeight="SemiBold" Foreground="#F0B429"/>
+              <TextBlock Text="โปรไฟล์เชื่อมต่อ" Margin="4,12,4,0"/><ComboBox x:Name="ProfileBox" SelectionChanged="ProfileBox_SelectionChanged"/>
+              <TextBlock Text="โฟลเดอร์ Server"/><TextBox x:Name="ServerDirectoryBox" Text="C:\Users\Administrator\Documents\Codex\TS Dark World online Server new 2026"/>
+              <Button Content="ซิงก์ค่าจากโฟลเดอร์ Server" Click="SyncServerDirectory_Click"/>
+              <TextBlock Text="คุณภาพภาพ (1–3)"/><Slider x:Name="RenderQualitySlider" Minimum="1" Maximum="3" TickFrequency="1" IsSnapToTickEnabled="True"/>
+              <TextBlock Text="เสียงรวม"/><Slider x:Name="VolumeSlider" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True"/>
+              <CheckBox x:Name="FullscreenBox" Content="เต็มหน้าจอ" Margin="4,10"/>
+              <TextBlock Text="คีย์ลัดเดิน: W A S D (เปลี่ยนได้ใน config)" Foreground="#B8CBD4"/>
+              <Button Content="บันทึกและใช้การตั้งค่า" Click="SaveQualitySettings_Click" Margin="4,14"/>
+            </StackPanel>
+          </Border>
+          <Border Grid.Column="2" Background="{StaticResource PanelBrush}" Padding="20" CornerRadius="8">
+            <StackPanel>
+              <TextBlock Text="Client Update / CDN" FontSize="21" FontWeight="SemiBold" Foreground="#F0B429"/>
+              <TextBlock Text="CDN Base URL" Margin="4,12,4,0"/><TextBox x:Name="CdnUrlBox"/>
+              <WrapPanel><Button Content="ตรวจอัปเดต" Click="CheckUpdate_Click"/><Button Content="บันทึก Performance Snapshot" Click="CapturePerformance_Click"/></WrapPanel>
+              <TextBox x:Name="QualityReportBox" Height="330" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+              <TextBlock Text="การอัปเดตดาวน์โหลดเข้า staging และตรวจ SHA-256 ก่อนติดตั้ง จึงไม่เขียนทับโปรแกรมขณะทำงาน" TextWrapping="Wrap" Foreground="#8FA7B2" Margin="4,10"/>
+            </StackPanel>
+          </Border>
+        </Grid>
+      </TabItem>
+    </TabControl>
+
+    <Border Grid.Row="2" Background="#142731">
+      <TextBlock x:Name="FooterStatus" Text="พร้อมใช้งาน — ยังไม่ได้เชื่อมต่อ" Margin="14,6" Foreground="#B8CBD4" />
+    </Border>
+  </Grid>
+</Window>

@@ -1,0 +1,31 @@
+<Application x:Class="TsmClient.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+  <Application.Resources>
+    <SolidColorBrush x:Key="PanelBrush" Color="#16242D" />
+    <SolidColorBrush x:Key="AccentBrush" Color="#F0B429" />
+    <Style TargetType="Button">
+      <Setter Property="Margin" Value="4" />
+      <Setter Property="Padding" Value="14,8" />
+      <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+      <Setter Property="Foreground" Value="#101820" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style TargetType="TextBox">
+      <Setter Property="Margin" Value="4" />
+      <Setter Property="Padding" Value="8" />
+      <Setter Property="Background" Value="#243944" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="BorderBrush" Value="#46616F" />
+    </Style>
+    <Style TargetType="PasswordBox">
+      <Setter Property="Margin" Value="4" />
+      <Setter Property="Padding" Value="8" />
+      <Setter Property="Background" Value="#243944" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="BorderBrush" Value="#46616F" />
+    </Style>
+  </Application.Resources>
+</Application>

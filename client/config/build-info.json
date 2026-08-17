@@ -1,0 +1,20 @@
+{
+  "Product": "TS Dark World Windows Client",
+  "Version": "0.8.0-test.1",
+  "BuildNumber": "20260817.035558",
+  "BuiltUtc": "2026-08-17T03:55:58Z",
+  "Runtime": "win-x64 self-contained",
+  "ProtocolVersion": 258,
+  "ReleaseChannel": "LocalTest",
+  "GameServer": "127.0.0.1:6613",
+  "Cdn": "http://127.0.0.1:8443",
+  "ServerDirectory": "C:\\Users\\Administrator\\Documents\\Codex\\TS Dark World online Server new 2026",
+  "Features": [
+    "Phase1-7 gameplay",
+    "Server Scene NPC packet",
+    "Map 10801 2D renderer",
+    "Local LAN VPS profiles",
+    "Crash report redaction",
+    "Update manifest validation"
+  ]
+}
