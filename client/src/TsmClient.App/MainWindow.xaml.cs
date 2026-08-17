@@ -31,6 +31,7 @@ public partial class MainWindow : Window
         _client.Disconnected += () => Dispatcher.Invoke(() => SetConnected(false));
         _keepaliveTimer.Tick += async (_, _) => await SendKeepaliveAsync();
         GameView.MoveRequested += async (x, y) => await MoveAsync(x, y);
+        GameView.NpcSelected += SelectNpcFromMap;
         ShowMapPreview(10801);
         Loaded += async (_, _) => await LoadSettingsAsync();
         Closed += async (_, _) => await _client.DisposeAsync();
@@ -338,6 +339,18 @@ public partial class MainWindow : Window
 
     private void NpcList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) =>
         TalkNpcButton.IsEnabled = NpcListBox.SelectedItem is NpcPlacement && _state.ConnectionState == ClientConnectionState.InGame;
+
+    private void SelectNpcFromMap(int npcId)
+    {
+        NpcPlacement? npc = _state.Npcs.FirstOrDefault(x => x.NpcId == npcId)
+            ?? SceneNpcRegistry.ForMap(_state.Position.MapId == 0 ? 10801 : _state.Position.MapId).FirstOrDefault(x => x.NpcId == npcId);
+        if (npc is null) return;
+        NpcListBox.SelectedItem = npc;
+        NpcListBox.ScrollIntoView(npc);
+        double distance = Math.Sqrt(Math.Pow(_state.Position.X - npc.X, 2) + Math.Pow(_state.Position.Y - npc.Y, 2));
+        NpcDialogText.Text = $"เลือก {npc.Name} (รหัส {npc.NpcId})\nระยะห่าง {distance:N0} หน่วย — ต้องไม่เกิน 180 หน่วยเพื่อสนทนา";
+        AddLog($"เลือก NPC {npc.NpcId} {npc.Name} จากแผนที่");
+    }
 
     private async void TalkNpc_Click(object sender, RoutedEventArgs e)
     {
